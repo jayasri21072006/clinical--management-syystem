@@ -1,0 +1,96 @@
+.stats-card {
+  background: var(--surface-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  border: 1px solid var(--neutral-100);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-3px);
+}
+
+.stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.stats-card.green::before { background: linear-gradient(90deg, var(--sage-400), var(--sage-600)); }
+.stats-card.blue::before { background: linear-gradient(90deg, #64B5F6, #1976D2); }
+.stats-card.orange::before { background: linear-gradient(90deg, #FFB74D, #E68A00); }
+.stats-card.red::before { background: linear-gradient(90deg, #E57373, #D32F2F); }
+
+.stats-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.stats-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stats-card.green .stats-card-icon { background: var(--sage-50); color: var(--sage-600); }
+.stats-card.blue .stats-card-icon { background: var(--info-light); color: var(--info); }
+.stats-card.orange .stats-card-icon { background: var(--warning-light); color: var(--warning); }
+.stats-card.red .stats-card-icon { background: var(--error-light); color: var(--error); }
+
+.stats-card-trend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.stats-card-trend.up {
+  color: var(--success);
+  background: var(--success-light);
+}
+
+.stats-card-trend.down {
+  color: var(--error);
+  background: var(--error-light);
+}
+
+.stats-card-value {
+  font-size: var(--font-3xl);
+  font-weight: 800;
+  color: var(--neutral-900);
+  line-height: 1;
+  margin-bottom: var(--space-1);
+}
+
+.stats-card-label {
+  font-size: var(--font-sm);
+  color: var(--neutral-500);
+  font-weight: 500;
+}
+
+.stats-card-footer {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--neutral-100);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-xs);
+  color: var(--neutral-500);
+}

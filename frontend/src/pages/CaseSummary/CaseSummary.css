@@ -1,0 +1,80 @@
+.case-summary-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.case-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--space-5);
+}
+
+.case-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  border: 1px solid var(--neutral-100);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-4);
+}
+
+.case-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--neutral-100);
+}
+
+.case-patient-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.case-section-title {
+  font-size: var(--font-md);
+  font-weight: 700;
+  color: var(--sage-800);
+  margin-bottom: var(--space-2);
+}
+
+.symptoms-tags {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-top: var(--space-2);
+}
+
+.symptom-tag {
+  background: var(--sage-50);
+  color: var(--sage-700);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-xs);
+  font-weight: 500;
+}
+
+.ai-insights-panel {
+  background: linear-gradient(135deg, rgba(45, 90, 61, 0.05), rgba(107, 155, 126, 0.08));
+  border: 1px solid var(--sage-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+.ai-insights-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 700;
+  color: var(--sage-800);
+  margin-bottom: var(--space-3);
+}
+
+@media (max-width: 1024px) {
+  .case-layout {
+    grid-template-columns: 1fr;
+  }
+}

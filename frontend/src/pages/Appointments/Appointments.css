@@ -1,0 +1,109 @@
+.appointments-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.appointments-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.timeline-group-title {
+  font-size: var(--font-md);
+  font-weight: 700;
+  color: var(--sage-800);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.timeline-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.appointment-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--neutral-100);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition-base);
+}
+
+.appointment-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--sage-200);
+}
+
+.appointment-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.appointment-time-badge {
+  background: var(--sage-50);
+  color: var(--sage-700);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: var(--font-sm);
+  min-width: 90px;
+  text-align: center;
+}
+
+.appointment-patient-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.appointment-patient-name {
+  font-size: var(--font-md);
+  font-weight: 600;
+  color: var(--neutral-900);
+}
+
+.appointment-doctor-name {
+  font-size: var(--font-xs);
+  color: var(--neutral-500);
+}
+
+.appointment-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Filter groups layout */
+.appointments-filter-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .appointment-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .appointment-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .appointments-filter-groups {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

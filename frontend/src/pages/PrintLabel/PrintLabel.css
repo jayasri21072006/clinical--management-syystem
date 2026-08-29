@@ -1,0 +1,32 @@
+.print-label-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.label-preview-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  border: 1px solid var(--neutral-100);
+  box-shadow: var(--shadow-sm);
+  max-width: 500px;
+}
+
+.prescription-label-box {
+  border: 2px dashed var(--sage-400);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  background: var(--sage-25);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.label-title {
+  font-size: var(--font-md);
+  font-weight: 700;
+  color: var(--sage-800);
+  border-bottom: 1px solid var(--sage-200);
+  padding-bottom: 6px;
+}
