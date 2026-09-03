@@ -24,6 +24,7 @@ class AppointmentModel(Base):
     status = Column(String, nullable=False, default="Confirmed")
     type = Column(String, nullable=False, default="Consultation")
     date_group = Column(String, nullable=False, default="today")
+    date = Column(String, nullable=True)
 
 class InventoryModel(Base):
     __tablename__ = "inventory"

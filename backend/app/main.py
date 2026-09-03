@@ -8,12 +8,22 @@ from app.models.models import (
 )
 from app.routers import (
     patients, appointments, inventory, physicians, dashboard, chat,
-    purchase_orders, case_summaries, locations, retail_sales, reports, modules
+    purchase_orders, case_summaries, locations, retail_sales, reports, modules,
+    ai_analysis, audit
 )
+from sqlalchemy import text
 import os
 
 # Create all tables
 Base.metadata.create_all(bind=engine)
+
+# Safe auto-migration for appointments date column
+try:
+    with engine.connect() as conn:
+        conn.execute(text("ALTER TABLE appointments ADD COLUMN date TEXT"))
+        conn.commit()
+except Exception:
+    pass
 
 app = FastAPI(
     title="Clinical Management System API",
@@ -158,6 +168,8 @@ app.include_router(locations.router)
 app.include_router(retail_sales.router)
 app.include_router(reports.router)
 app.include_router(modules.router)
+app.include_router(ai_analysis.router)
+app.include_router(audit.router)
 
 @app.get("/")
 def home():

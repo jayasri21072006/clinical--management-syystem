@@ -8,12 +8,11 @@ import Dashboard from './pages/Dashboard/Dashboard.jsx';
 import Patients from './pages/Patients/Patients.jsx';
 import Appointments from './pages/Appointments/Appointments.jsx';
 import CaseSummary from './pages/CaseSummary/CaseSummary.jsx';
-import MedicalInventory from './pages/MedicalInventory/MedicalInventory.jsx';
-import RetailSelling from './pages/RetailSelling/RetailSelling.jsx';
 import PurchaseOrders from './pages/PurchaseOrders/PurchaseOrders.jsx';
 import Reports from './pages/Reports/Reports.jsx';
 import Physician from './pages/Physician/Physician.jsx';
 import Location from './pages/Location/Location.jsx';
+import AIAssistant from './pages/AIAssistant/AIAssistant.jsx';
 
 import './App.css';
 
@@ -28,12 +27,11 @@ function App() {
           <Route path="/patients" element={<Patients />} />
           <Route path="/appointments" element={<Appointments />} />
           <Route path="/case-summary" element={<CaseSummary />} />
-          <Route path="/medical-inventory" element={<MedicalInventory />} />
-          <Route path="/retail-selling" element={<RetailSelling />} />
           <Route path="/purchase-orders" element={<PurchaseOrders />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/physician" element={<Physician />} />
           <Route path="/location" element={<Location />} />
+          <Route path="/ai-assistant" element={<AIAssistant />} />
         </Routes>
       </main>
       <ChatWidget />

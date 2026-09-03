@@ -4,6 +4,49 @@ import Header from '../../components/Header/Header.jsx';
 import api from '../../services/api.js';
 import './Appointments.css';
 
+// Clean time strings (e.g. "Tomorrow 10:00 AM" -> "10:00 AM")
+const cleanTime = (timeStr) => {
+  if (!timeStr) return '10:00 AM';
+  return timeStr.replace(/^(today|tomorrow)\s+/i, '');
+};
+
+// Parse appointment date into professional calendar format
+const parseAppointmentDate = (apt) => {
+  if (apt.date) {
+    const parts = apt.date.split('-');
+    if (parts.length === 3) {
+      const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+      return {
+        month: d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
+        dayNum: String(d.getDate()).padStart(2, '0'),
+        dayName: d.toLocaleDateString('en-US', { weekday: 'short' }),
+        year: d.getFullYear(),
+        raw: apt.date
+      };
+    }
+  }
+
+  const now = new Date();
+  const d = new Date(now);
+  if (apt.time && apt.time.toLowerCase().includes('tomorrow')) {
+    d.setDate(d.getDate() + 1);
+  } else if (apt.date_group === 'upcoming') {
+    d.setDate(d.getDate() + 1);
+  }
+
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+
+  return {
+    month: d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
+    dayNum: day,
+    dayName: d.toLocaleDateString('en-US', { weekday: 'short' }),
+    year: y,
+    raw: `${y}-${m}-${day}`
+  };
+};
+
 const Appointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,13 +59,15 @@ const Appointments = () => {
   // Dynamic filter values from database
   const [filterOptions, setFilterOptions] = useState({ statuses: [], types: [], doctors: [], date_groups: [] });
 
+  const todayStr = new Date().toISOString().split('T')[0];
+
   const [formData, setFormData] = useState({
+    date: todayStr,
     time: '10:00 AM',
     patient: '',
     doctor: 'Dr. Ramesh',
     status: 'Confirmed',
     type: 'Consultation',
-    date_group: 'today'
   });
 
   const [searchTimer, setSearchTimer] = useState(null);
@@ -78,19 +123,27 @@ const Appointments = () => {
 
   const openAddModal = () => {
     setEditingApt(null);
-    setFormData({ time: '10:00 AM', patient: '', doctor: 'Dr. Ramesh', status: 'Confirmed', type: 'Consultation', date_group: 'today' });
+    setFormData({
+      date: todayStr,
+      time: '10:00 AM',
+      patient: '',
+      doctor: 'Dr. Ramesh',
+      status: 'Confirmed',
+      type: 'Consultation',
+    });
     setShowModal(true);
   };
 
   const openEditModal = (apt) => {
     setEditingApt(apt);
+    const parsed = parseAppointmentDate(apt);
     setFormData({
-      time: apt.time,
+      date: apt.date || parsed.raw,
+      time: cleanTime(apt.time),
       patient: apt.patient,
       doctor: apt.doctor,
       status: apt.status,
       type: apt.type,
-      date_group: apt.date_group,
     });
     setShowModal(true);
   };
@@ -100,10 +153,16 @@ const Appointments = () => {
     if (!formData.patient.trim()) return;
 
     try {
+      const isToday = formData.date === todayStr;
+      const payload = {
+        ...formData,
+        date_group: isToday ? 'today' : 'upcoming'
+      };
+
       if (editingApt) {
-        await api.updateAppointment(editingApt.id, formData);
+        await api.updateAppointment(editingApt.id, payload);
       } else {
-        await api.createAppointment(formData);
+        await api.createAppointment(payload);
       }
       setShowModal(false);
       setEditingApt(null);
@@ -117,10 +176,6 @@ const Appointments = () => {
   // Build dynamic filter lists from DB
   const statusFilters = ['All', ...filterOptions.statuses];
   const typeFilters = ['All', ...filterOptions.types];
-
-  // Split results by date_group (already server-filtered)
-  const todayList = appointments.filter((a) => a.date_group === 'today');
-  const upcomingList = appointments.filter((a) => a.date_group === 'upcoming');
 
   return (
     <div className="appointments-page">
@@ -194,25 +249,31 @@ const Appointments = () => {
         </div>
       ) : (
         <div className="appointments-timeline">
-          <div>
-            <div className="timeline-group-title">
-              <Clock size={18} /> Today's Schedule ({todayList.length})
-            </div>
-            <div className="timeline-cards" style={{ marginTop: '12px' }}>
-              {todayList.length === 0 && (
-                <div style={{ padding: '16px', color: 'var(--neutral-400)', fontSize: '13px' }}>No appointments match your filter.</div>
-              )}
-              {todayList.map((apt) => (
+          <div className="timeline-cards">
+            {appointments.length === 0 && (
+              <div style={{ padding: '16px', color: 'var(--neutral-400)', fontSize: '13px' }}>No appointments match your filter.</div>
+            )}
+            {appointments.map((apt) => {
+              const dateInfo = parseAppointmentDate(apt);
+              return (
                 <div className="appointment-card fade-in-up" key={apt.id}>
                   <div className="appointment-left">
-                    <div className="appointment-time-badge">{apt.time}</div>
+                    <div className="appointment-calendar-tile">
+                      <span className="cal-tile-month">{dateInfo.month}</span>
+                      <span className="cal-tile-day">{dateInfo.dayNum}</span>
+                      <span className="cal-tile-weekday">{dateInfo.dayName}</span>
+                    </div>
+                    <div className="appointment-time-badge">
+                      <Clock size={13} />
+                      <span>{cleanTime(apt.time)}</span>
+                    </div>
                     <div className="appointment-patient-info">
                       <span className="appointment-patient-name">{apt.patient}</span>
                       <span className="appointment-doctor-name">{apt.doctor} · {apt.type}</span>
                     </div>
                   </div>
                   <div className="appointment-actions">
-                    <span className={`badge ${apt.status === 'Confirmed' ? 'badge-success' : apt.status === 'In Progress' ? 'badge-info' : 'badge-warning'}`}>
+                    <span className={`badge ${apt.status === 'Confirmed' ? 'badge-success' : apt.status === 'In Progress' ? 'badge-info' : apt.status === 'Completed' ? 'badge-success' : 'badge-warning'}`}>
                       {apt.status}
                     </span>
                     <button className="btn btn-secondary btn-sm" onClick={() => openEditModal(apt)}>
@@ -220,38 +281,8 @@ const Appointments = () => {
                     </button>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          <div style={{ marginTop: '24px' }}>
-            <div className="timeline-group-title">
-              <Calendar size={18} /> Upcoming ({upcomingList.length})
-            </div>
-            <div className="timeline-cards" style={{ marginTop: '12px' }}>
-              {upcomingList.length === 0 && (
-                <div style={{ padding: '16px', color: 'var(--neutral-400)', fontSize: '13px' }}>No upcoming appointments match your filter.</div>
-              )}
-              {upcomingList.map((apt) => (
-                <div className="appointment-card fade-in-up" key={apt.id}>
-                  <div className="appointment-left">
-                    <div className="appointment-time-badge">{apt.time}</div>
-                    <div className="appointment-patient-info">
-                      <span className="appointment-patient-name">{apt.patient}</span>
-                      <span className="appointment-doctor-name">{apt.doctor} · {apt.type}</span>
-                    </div>
-                  </div>
-                  <div className="appointment-actions">
-                    <span className={`badge ${apt.status === 'Confirmed' ? 'badge-success' : 'badge-warning'}`}>
-                      {apt.status}
-                    </span>
-                    <button className="btn btn-secondary btn-sm" onClick={() => openEditModal(apt)}>
-                      <Edit3 size={12} style={{ marginRight: '4px' }} /> Edit
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+              );
+            })}
           </div>
         </div>
       )}
@@ -278,14 +309,43 @@ const Appointments = () => {
                   style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #D0D5DD' }}
                 />
               </div>
+
+              {/* Date and Time */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', marginBottom: '4px' }}>Time</label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '600', marginBottom: '4px', color: 'var(--neutral-700)' }}>
+                    <Calendar size={13} style={{ color: 'var(--sage-600)' }} /> Appointment Date *
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={formData.date}
+                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #D0D5DD', fontSize: '13px' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '600', marginBottom: '4px', color: 'var(--neutral-700)' }}>
+                    <Clock size={13} style={{ color: 'var(--sage-600)' }} /> Time *
+                  </label>
                   <input
                     type="text"
-                    placeholder="e.g. 11:30 AM"
+                    required
+                    placeholder="e.g. 10:00 AM"
                     value={formData.time}
                     onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #D0D5DD', fontSize: '13px' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', marginBottom: '4px' }}>Doctor</label>
+                  <input
+                    type="text"
+                    value={formData.doctor}
+                    onChange={(e) => setFormData({ ...formData, doctor: e.target.value })}
                     style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #D0D5DD' }}
                   />
                 </div>
@@ -303,42 +363,22 @@ const Appointments = () => {
                   </select>
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', marginBottom: '4px' }}>Doctor</label>
-                  <input
-                    type="text"
-                    value={formData.doctor}
-                    onChange={(e) => setFormData({ ...formData, doctor: e.target.value })}
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #D0D5DD' }}
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', marginBottom: '4px' }}>Status</label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #D0D5DD' }}
-                  >
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="Pending">Pending</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
-                  </select>
-                </div>
-              </div>
+
               <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', marginBottom: '4px' }}>Schedule Group</label>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', marginBottom: '4px' }}>Status</label>
                 <select
-                  value={formData.date_group}
-                  onChange={(e) => setFormData({ ...formData, date_group: e.target.value })}
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                   style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #D0D5DD' }}
                 >
-                  <option value="today">Today</option>
-                  <option value="upcoming">Upcoming</option>
+                  <option value="Confirmed">Confirmed</option>
+                  <option value="Pending">Pending</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Cancelled">Cancelled</option>
                 </select>
               </div>
+
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '12px' }}>
                 <button type="button" onClick={() => { setShowModal(false); setEditingApt(null); }} className="btn btn-secondary">Cancel</button>
                 <button type="submit" className="btn-add-patient">{editingApt ? 'Update' : 'Book Now'}</button>

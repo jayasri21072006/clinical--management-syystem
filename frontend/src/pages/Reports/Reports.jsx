@@ -1,5 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart3, Download, Calendar, TrendingUp, RefreshCw } from 'lucide-react';
+import {
+  BarChart3,
+  Download,
+  Calendar,
+  TrendingUp,
+  RefreshCw,
+  ShieldCheck,
+  Sparkles,
+  AlertTriangle,
+  Lock,
+  FileCheck2,
+  X
+} from 'lucide-react';
 import Header from '../../components/Header/Header.jsx';
 import api from '../../services/api.js';
 import './Reports.css';
@@ -7,6 +19,9 @@ import './Reports.css';
 const Reports = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [aiReportLoading, setAiReportLoading] = useState(false);
+  const [safetyReport, setSafetyReport] = useState(null);
+  const [showAiModal, setShowAiModal] = useState(false);
 
   const loadReports = async () => {
     try {
@@ -23,6 +38,25 @@ const Reports = () => {
   useEffect(() => {
     loadReports();
   }, []);
+
+  const handleGenerateSafetyReport = async () => {
+    setAiReportLoading(true);
+    setShowAiModal(true);
+    try {
+      const res = await api.generateSafetyReport({
+        age: '58',
+        gender: 'Female',
+        chief_complaints: 'Severe unilateral headaches, elevated BP, dyspnea on mild exertion',
+        diagnosis: 'Essential Hypertension, Chronic Migraine with Aura, HbA1c 7.8%',
+        current_medications: 'Amlodipine 5mg, Metformin 500mg, Belladonna 200C'
+      });
+      setSafetyReport(res.safety_report);
+    } catch (err) {
+      console.error('Failed to generate safety report:', err);
+    } finally {
+      setAiReportLoading(false);
+    }
+  };
 
   const handleDownloadPDF = (report) => {
     const printWindow = window.open('', '_blank', 'width=800,height=900');
@@ -41,79 +75,19 @@ const Reports = () => {
         <head>
           <title>${reportTitle} - PDF Export</title>
           <style>
-            body {
-              font-family: Arial, sans-serif;
-              color: #1a202c;
-              padding: 40px;
-              margin: 0;
-            }
-            .header {
-              border-bottom: 2px solid #2e7d32;
-              padding-bottom: 16px;
-              margin-bottom: 24px;
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-            }
-            .brand {
-              font-size: 22px;
-              font-weight: bold;
-              color: #1b5e20;
-            }
-            .subtitle {
-              font-size: 12px;
-              color: #666;
-              margin-top: 4px;
-            }
-            .report-info {
-              background: #f8fafc;
-              border: 1px solid #e2e8f0;
-              border-radius: 8px;
-              padding: 16px;
-              margin-bottom: 24px;
-            }
-            .report-title {
-              font-size: 18px;
-              font-weight: bold;
-              color: #2d3748;
-              margin: 0 0 8px 0;
-            }
-            .meta-row {
-              font-size: 13px;
-              color: #4a5568;
-              display: flex;
-              gap: 24px;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              margin-top: 20px;
-            }
-            th, td {
-              border: 1px solid #cbd5e1;
-              padding: 10px 12px;
-              text-align: left;
-              font-size: 13px;
-            }
-            th {
-              background-color: #f1f5f9;
-              font-weight: bold;
-              color: #334155;
-            }
-            tr:nth-child(even) {
-              background-color: #f8fafc;
-            }
-            .footer {
-              margin-top: 40px;
-              border-top: 1px solid #e2e8f0;
-              padding-top: 12px;
-              font-size: 11px;
-              color: #94a3b8;
-              text-align: center;
-            }
-            @media print {
-              body { padding: 20px; }
-            }
+            body { font-family: Arial, sans-serif; color: #1a202c; padding: 40px; margin: 0; }
+            .header { border-bottom: 2px solid #2e7d32; padding-bottom: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+            .brand { font-size: 22px; font-weight: bold; color: #1b5e20; }
+            .subtitle { font-size: 12px; color: #666; margin-top: 4px; }
+            .report-info { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 24px; }
+            .report-title { font-size: 18px; font-weight: bold; color: #2d3748; margin: 0 0 8px 0; }
+            .meta-row { font-size: 13px; color: #4a5568; display: flex; gap: 24px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #cbd5e1; padding: 10px 12px; text-align: left; font-size: 13px; }
+            th { background-color: #f1f5f9; font-weight: bold; color: #334155; }
+            tr:nth-child(even) { background-color: #f8fafc; }
+            .footer { margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 12px; font-size: 11px; color: #94a3b8; text-align: center; }
+            @media print { body { padding: 20px; } }
           </style>
         </head>
         <body>
@@ -192,9 +166,113 @@ const Reports = () => {
     printWindow.document.close();
   };
 
+  const handleDownloadSafetyPDF = (rep) => {
+    if (!rep) return;
+    const printWindow = window.open('', '_blank', 'width=850,height=950');
+    if (!printWindow) {
+      alert('Please allow popups to download report PDFs.');
+      return;
+    }
+
+    const content = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>AI Safety & Clinical Governance Report - ${rep.report_id}</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #0f172a; padding: 40px; margin: 0; line-height: 1.5; }
+            .header { border-bottom: 3px solid #059669; padding-bottom: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+            .brand { font-size: 24px; font-weight: 800; color: #065f46; letter-spacing: -0.5px; }
+            .badge { display: inline-block; padding: 4px 12px; border-radius: 9999px; background: #ecfdf5; color: #059669; font-weight: 700; font-size: 12px; border: 1px solid #a7f3d0; }
+            .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px; margin-bottom: 20px; }
+            h2 { color: #1e293b; margin-top: 0; font-size: 18px; }
+            h3 { color: #334155; font-size: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-top: 20px; }
+            ul { margin: 8px 0 0 20px; padding: 0; }
+            li { margin-bottom: 6px; font-size: 13px; color: #334155; }
+            .disclaimer { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px; font-size: 12px; color: #991b1b; margin-top: 24px; }
+            .footer { margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 12px; font-size: 11px; color: #94a3b8; text-align: center; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div>
+              <div class="brand">SAGE GREEN WELLNESS CLINIC</div>
+              <div style="font-size: 12px; color: #64748b; margin-top: 2px;">Clinical Decision Support & Data Governance Division</div>
+            </div>
+            <div style="text-align: right;">
+              <span class="badge">HIPAA DE-IDENTIFIED</span>
+              <div style="font-size: 12px; color: #64748b; margin-top: 6px;">Report ID: ${rep.report_id}</div>
+              <div style="font-size: 12px; color: #64748b;">Date: ${rep.audit_timestamp}</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>AI Safety & Clinical Risk Governance Audit</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 13px;">
+              <div><strong>AI Model Engine:</strong> ${rep.ai_model_version}</div>
+              <div><strong>Overall Safety Rating:</strong> <span style="color: #059669; font-weight: bold;">${rep.overall_safety_rating}</span></div>
+              <div><strong>Privacy Status:</strong> ${rep.privacy_compliance_status}</div>
+              <div><strong>Risk Score Index:</strong> ${rep.clinical_risk_analysis?.risk_score_index}</div>
+            </div>
+          </div>
+
+          <h3>Clinical Risk & Triage Recommendation</h3>
+          <p style="font-size: 13px; color: #334155;"><strong>Triage Guidance:</strong> ${rep.clinical_risk_analysis?.triage_recommendation}</p>
+          <div style="margin-top: 10px;">
+            <strong>Contraindications & Safety Warnings:</strong>
+            <ul>
+              ${rep.clinical_risk_analysis?.contraindication_alerts?.map(c => `<li>${c}</li>`).join('')}
+            </ul>
+          </div>
+
+          <h3>Data Governance & HIPAA Privacy Safeguards</h3>
+          <ul>
+            ${rep.governance_safeguards?.map(g => `<li>${g}</li>`).join('')}
+          </ul>
+
+          <h3>Actionable Clinical Safety Protocols</h3>
+          <ul>
+            ${rep.actionable_safety_protocols?.map(p => `<li>${p}</li>`).join('')}
+          </ul>
+
+          <div class="disclaimer">
+            <strong>MANDATORY HUMAN CLINICAL OVERSIGHT:</strong><br/>
+            ${rep.clinician_sign_off_statement} AI decision support output must be validated by an authorized treating clinician prior to medical intervention.
+          </div>
+
+          <div class="footer">
+            Confidential Healthcare Audit Document — Sage Green Wellness AI Privacy Gateway — Generated on ${new Date().toLocaleString()}
+          </div>
+
+          <script>
+            window.onload = function() {
+              window.print();
+              setTimeout(function() { window.close(); }, 500);
+            };
+          </script>
+        </body>
+      </html>
+    `;
+    printWindow.document.write(content);
+    printWindow.document.close();
+  };
+
   return (
     <div className="reports-page">
       <Header title="Reports" subtitle="Clinical & Financial Insights Analytics">
+        <button
+          className="btn btn-secondary"
+          onClick={handleGenerateSafetyReport}
+          style={{
+            marginRight: '8px',
+            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)',
+            border: '1px solid rgba(16, 185, 129, 0.4)',
+            color: '#059669',
+            fontWeight: 600
+          }}
+        >
+          <Sparkles size={16} style={{ color: '#10b981' }} /> Generate AI Safety Report
+        </button>
         <button className="btn-refresh" onClick={loadReports} title="Refresh" style={{ marginRight: '8px' }}>
           <RefreshCw size={16} />
         </button>
@@ -202,6 +280,64 @@ const Reports = () => {
           <Download size={16} /> Export All Data
         </button>
       </Header>
+
+      {/* Featured AI Safety Banner Card */}
+      <div className="card fade-in-up" style={{
+        padding: '24px',
+        marginBottom: '24px',
+        background: 'linear-gradient(135deg, #064e3b 0%, #0f172a 100%)',
+        color: '#ffffff',
+        border: '1px solid rgba(52, 211, 153, 0.3)',
+        borderRadius: '16px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '16px'
+      }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+            <ShieldCheck size={24} className="text-emerald-400" />
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, color: '#f8fafc' }}>
+              Gemini AI Clinical Safety & Governance Audit
+            </h2>
+            <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '9999px', background: 'rgba(52, 211, 153, 0.2)', color: '#34d399', border: '1px solid rgba(52, 211, 153, 0.4)', fontWeight: 700 }}>
+              Live Model Active
+            </span>
+          </div>
+          <p style={{ margin: 0, fontSize: '0.88rem', color: '#cbd5e1', maxWidth: '650px' }}>
+            Generate and audit comprehensive patient risk matrices, drug interaction warnings, and HIPAA de-identification compliance logs using Google Gemini 2.5 Flash.
+          </p>
+        </div>
+        <button
+          onClick={handleGenerateSafetyReport}
+          disabled={aiReportLoading}
+          style={{
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            color: 'white',
+            border: 'none',
+            padding: '12px 20px',
+            borderRadius: '10px',
+            fontWeight: 700,
+            fontSize: '0.9rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)'
+          }}
+        >
+          {aiReportLoading ? (
+            <>
+              <RefreshCw className="animate-spin" size={18} /> Generating with Gemini...
+            </>
+          ) : (
+            <>
+              <Sparkles size={18} /> Run Safety & Risk Audit
+            </>
+          )}
+        </button>
+      </div>
 
       {loading ? (
         <div style={{ padding: '40px', textAlign: 'center', color: 'var(--neutral-500)' }}>
@@ -226,6 +362,168 @@ const Reports = () => {
               </button>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* AI Safety Report Modal */}
+      {showAiModal && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0, 0, 0, 0.7)',
+          backdropFilter: 'blur(8px)',
+          zIndex: 10000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px'
+        }}>
+          <div style={{
+            background: '#0f172a',
+            color: '#f8fafc',
+            border: '1px solid rgba(52, 211, 153, 0.3)',
+            borderRadius: '16px',
+            maxWidth: '750px',
+            width: '100%',
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            padding: '28px',
+            position: 'relative',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)'
+          }}>
+            <button
+              onClick={() => setShowAiModal(false)}
+              style={{
+                position: 'absolute',
+                top: '20px',
+                right: '20px',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: 'none',
+                color: '#94a3b8',
+                borderRadius: '8px',
+                padding: '6px',
+                cursor: 'pointer'
+              }}
+            >
+              <X size={20} />
+            </button>
+
+            {aiReportLoading ? (
+              <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+                <RefreshCw className="animate-spin" size={40} style={{ color: '#10b981', margin: '0 auto 16px auto' }} />
+                <h3 style={{ color: '#f8fafc', margin: '0 0 8px 0' }}>Analyzing Clinical Safety Matrix with Google Gemini...</h3>
+                <p style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Executing Server-Side De-Identification & Clinical Risk Verification</p>
+              </div>
+            ) : safetyReport ? (
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                  <ShieldCheck size={28} className="text-emerald-400" />
+                  <div>
+                    <h2 style={{ margin: 0, fontSize: '1.35rem', color: '#f8fafc' }}>AI Safety & Governance Audit Report</h2>
+                    <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Report ID: {safetyReport.report_id} | Model: {safetyReport.ai_model_version}</span>
+                  </div>
+                </div>
+
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '12px',
+                  background: 'rgba(30, 41, 59, 0.7)',
+                  padding: '16px',
+                  borderRadius: '10px',
+                  marginBottom: '18px',
+                  fontSize: '0.85rem'
+                }}>
+                  <div>
+                    <span style={{ color: '#94a3b8' }}>Safety Rating:</span>
+                    <div style={{ color: '#34d399', fontWeight: 700, fontSize: '1rem' }}>{safetyReport.overall_safety_rating}</div>
+                  </div>
+                  <div>
+                    <span style={{ color: '#94a3b8' }}>Privacy Compliance:</span>
+                    <div style={{ color: '#38bdf8', fontWeight: 700 }}>{safetyReport.privacy_compliance_status}</div>
+                  </div>
+                  <div>
+                    <span style={{ color: '#94a3b8' }}>Risk Index:</span>
+                    <div style={{ color: '#fbbf24', fontWeight: 700 }}>{safetyReport.clinical_risk_analysis?.risk_score_index}</div>
+                  </div>
+                  <div>
+                    <span style={{ color: '#94a3b8' }}>Triage:</span>
+                    <div style={{ color: '#e2e8f0', fontWeight: 600 }}>{safetyReport.clinical_risk_analysis?.triage_recommendation}</div>
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: '16px' }}>
+                  <strong style={{ fontSize: '0.85rem', color: '#fca5a5', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <AlertTriangle size={16} /> Contraindication & Drug Safety Warnings:
+                  </strong>
+                  <ul style={{ margin: '6px 0 0 20px', padding: 0, fontSize: '0.82rem', color: '#cbd5e1' }}>
+                    {safetyReport.clinical_risk_analysis?.contraindication_alerts?.map((alert, idx) => (
+                      <li key={idx} style={{ marginBottom: '4px' }}>{alert}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div style={{ marginBottom: '16px' }}>
+                  <strong style={{ fontSize: '0.85rem', color: '#34d399', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <FileCheck2 size={16} /> Actionable Clinical Safety Protocols:
+                  </strong>
+                  <ul style={{ margin: '6px 0 0 20px', padding: 0, fontSize: '0.82rem', color: '#cbd5e1' }}>
+                    {safetyReport.actionable_safety_protocols?.map((protocol, idx) => (
+                      <li key={idx} style={{ marginBottom: '4px' }}>{protocol}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div style={{
+                  background: 'rgba(239, 68, 68, 0.12)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  fontSize: '0.78rem',
+                  color: '#fca5a5',
+                  marginBottom: '20px'
+                }}>
+                  <strong>CLINICAL OVERSIGHT MANDATORY:</strong> {safetyReport.clinician_sign_off_statement}
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button
+                    onClick={() => handleDownloadSafetyPDF(safetyReport)}
+                    style={{
+                      flex: 1,
+                      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                      color: 'white',
+                      border: 'none',
+                      padding: '10px 16px',
+                      borderRadius: '8px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px'
+                    }}
+                  >
+                    <Download size={16} /> Download Official Safety PDF
+                  </button>
+                  <button
+                    onClick={() => setShowAiModal(false)}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      color: '#cbd5e1',
+                      border: 'none',
+                      padding: '10px 16px',
+                      borderRadius: '8px',
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            ) : null}
+          </div>
         </div>
       )}
     </div>

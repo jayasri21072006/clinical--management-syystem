@@ -9,6 +9,7 @@ const CaseSummary = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCase, setSelectedCase] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [editingCase, setEditingCase] = useState(null);
   const [formData, setFormData] = useState({
     patient_name: '',
@@ -121,121 +122,141 @@ const CaseSummary = () => {
         </div>
       ) : (
         <>
-          {/* Case Selector */}
-          {cases.length > 0 && (
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
-              <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--neutral-600)', marginRight: '4px' }}>
-                Select Case ({cases.length}):
-              </span>
-              {cases.map((c) => (
-                <div
-                  key={c.id}
-                  className={`patients-filter-chip ${selectedCase?.id === c.id ? 'active' : ''}`}
-                  onClick={() => setSelectedCase(c)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  {c.patient_name} (#{c.patient_id_ref || c.id})
-                </div>
-              ))}
-            </div>
-          )}
-
-          {selectedCase && (
-            <div className="case-layout">
-              {/* Main Content */}
-              <div>
-                <div className="case-card fade-in-up">
-                  <div className="case-card-header">
-                    <div className="case-patient-header">
-                      <div className="avatar avatar-md" style={{ background: 'var(--sage-600)' }}>
-                        {selectedCase.patient_name.charAt(0)}
-                      </div>
-                      <div>
-                        <h3 style={{ fontSize: 'var(--font-lg)', fontWeight: 700 }}>
-                          {selectedCase.patient_name} (#{selectedCase.patient_id_ref})
-                        </h3>
-                        <span style={{ fontSize: 'var(--font-xs)', color: 'var(--neutral-500)' }}>
-                          {selectedCase.age ? `${selectedCase.age} yrs` : 'Age N/A'} · {selectedCase.gender} · Last visit: {selectedCase.last_visit || 'N/A'}
-                        </span>
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                      <span className={`badge ${selectedCase.case_status === 'Active Case' ? 'badge-success' : 'badge-sage'}`}>
-                        {selectedCase.case_status}
-                      </span>
-                      <button className="btn btn-secondary btn-sm" onClick={() => openEditModal(selectedCase)}>
-                        <Edit3 size={12} style={{ marginRight: '4px' }} /> Edit
-                      </button>
-                    </div>
-                  </div>
-
-                  <div style={{ marginBottom: 'var(--space-4)' }}>
-                    <div className="case-section-title">Chief Complaints</div>
-                    <p style={{ fontSize: 'var(--font-sm)', color: 'var(--neutral-700)' }}>
-                      {selectedCase.chief_complaints || 'No complaints recorded.'}
-                    </p>
-                    {symptomsArray.length > 0 && (
-                      <div className="symptoms-tags">
-                        {symptomsArray.map((symptom, idx) => (
-                          <span className="symptom-tag" key={idx}>{symptom}</span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <div style={{ marginBottom: 'var(--space-4)' }}>
-                    <div className="case-section-title">Diagnosis & Miasmatic Analysis</div>
-                    <p style={{ fontSize: 'var(--font-sm)', color: 'var(--neutral-700)' }}>
-                      {selectedCase.diagnosis || 'No diagnosis recorded.'}
-                    </p>
-                  </div>
-
+          {/* Cases Grid */}
+          <div className="cases-grid">
+            {cases.map((c) => (
+              <div
+                key={c.id}
+                className="case-small-card fade-in-up"
+                onClick={() => { setSelectedCase(c); setShowDetailModal(true); }}
+              >
+                <div className="case-small-header">
                   <div>
-                    <div className="case-section-title">Prescription Summary</div>
-                    <div style={{ background: 'var(--neutral-25)', padding: '12px', borderRadius: '10px', fontSize: '13px' }}>
-                      {prescriptionLines.length > 0 ? (
-                        prescriptionLines.map((line, idx) => (
-                          <div key={idx}>{line}</div>
-                        ))
-                      ) : (
-                        <span style={{ color: 'var(--neutral-400)' }}>No prescription recorded.</span>
-                      )}
+                    <div className="case-small-name">{c.patient_name} (#{c.patient_id_ref || c.id})</div>
+                    <div className="case-small-meta">
+                      {c.age ? `${c.age} yrs` : 'Age N/A'} · {c.gender} · Last visit: {c.last_visit || 'N/A'}
                     </div>
                   </div>
+                  <span className={`badge ${c.case_status === 'Active Case' ? 'badge-success' : 'badge-sage'}`}>
+                    {c.case_status}
+                  </span>
                 </div>
-              </div>
-
-              {/* AI Insights & Context Panel */}
-              <div>
-                <div className="ai-insights-panel fade-in-up">
-                  <div className="ai-insights-header">
-                    <Sparkles size={20} color="var(--sage-600)" />
-                    AI Clinical Assistant
+                {c.chief_complaints && (
+                  <div className="case-small-complaints">
+                    {c.chief_complaints}
                   </div>
-                  <p style={{ fontSize: 'var(--font-xs)', color: 'var(--neutral-600)', marginBottom: '16px' }}>
-                    Suggested remedy repertory match based on totality of symptoms:
-                  </p>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {symptomsArray.length > 0 ? (
-                      <>
-                        <div style={{ background: 'white', padding: '10px', borderRadius: '8px', border: '1px solid var(--sage-200)' }}>
-                          <strong style={{ color: 'var(--sage-800)', fontSize: '13px' }}>1. Belladonna (92% Match)</strong>
-                          <p style={{ fontSize: '11px', color: 'var(--neutral-500)', marginTop: '2px' }}>High affinity for sudden violent headaches & photophobia.</p>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Case Detail Modal */}
+          {showDetailModal && selectedCase && (
+            <div className="modal-overlay">
+              <div className="modal-content fade-in-up" style={{ background: 'white', padding: '24px', borderRadius: '16px', maxWidth: '850px', width: '90%', maxHeight: '90vh', overflowY: 'auto' }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
+                  <button onClick={() => { setShowDetailModal(false); setSelectedCase(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                    <X size={20} />
+                  </button>
+                </div>
+                
+                <div className="case-layout">
+                  {/* Main Content */}
+                  <div>
+                    <div className="case-card">
+                      <div className="case-card-header">
+                        <div className="case-patient-header">
+                          <div className="avatar avatar-md" style={{ background: 'var(--sage-600)' }}>
+                            {selectedCase.patient_name.charAt(0)}
+                          </div>
+                          <div>
+                            <h3 style={{ fontSize: 'var(--font-lg)', fontWeight: 700 }}>
+                              {selectedCase.patient_name} (#{selectedCase.patient_id_ref})
+                            </h3>
+                            <span style={{ fontSize: 'var(--font-xs)', color: 'var(--neutral-500)' }}>
+                              {selectedCase.age ? `${selectedCase.age} yrs` : 'Age N/A'} · {selectedCase.gender} · Last visit: {selectedCase.last_visit || 'N/A'}
+                            </span>
+                          </div>
                         </div>
-                        <div style={{ background: 'white', padding: '10px', borderRadius: '8px', border: '1px solid var(--sage-200)' }}>
-                          <strong style={{ color: 'var(--sage-800)', fontSize: '13px' }}>2. Spigelia (85% Match)</strong>
-                          <p style={{ fontSize: '11px', color: 'var(--neutral-500)', marginTop: '2px' }}>Left-sided neuralgic headache following sun exposure.</p>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                          <span className={`badge ${selectedCase.case_status === 'Active Case' ? 'badge-success' : 'badge-sage'}`}>
+                            {selectedCase.case_status}
+                          </span>
+                          <button className="btn btn-secondary btn-sm" onClick={() => { setShowDetailModal(false); openEditModal(selectedCase); }}>
+                            <Edit3 size={12} style={{ marginRight: '4px' }} /> Edit
+                          </button>
                         </div>
-                        <div style={{ background: 'white', padding: '10px', borderRadius: '8px', border: '1px solid var(--sage-200)' }}>
-                          <strong style={{ color: 'var(--sage-800)', fontSize: '13px' }}>3. Iris Versicolor (78% Match)</strong>
-                          <p style={{ fontSize: '11px', color: 'var(--neutral-500)', marginTop: '2px' }}>Sick headache with blurriness and bilious vomiting.</p>
+                      </div>
+
+                      <div style={{ marginBottom: 'var(--space-4)' }}>
+                        <div className="case-section-title">Chief Complaints</div>
+                        <p style={{ fontSize: 'var(--font-sm)', color: 'var(--neutral-700)' }}>
+                          {selectedCase.chief_complaints || 'No complaints recorded.'}
+                        </p>
+                        {symptomsArray.length > 0 && (
+                          <div className="symptoms-tags">
+                            {symptomsArray.map((symptom, idx) => (
+                              <span className="symptom-tag" key={idx}>{symptom}</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      <div style={{ marginBottom: 'var(--space-4)' }}>
+                        <div className="case-section-title">Diagnosis & Miasmatic Analysis</div>
+                        <p style={{ fontSize: 'var(--font-sm)', color: 'var(--neutral-700)' }}>
+                          {selectedCase.diagnosis || 'No diagnosis recorded.'}
+                        </p>
+                      </div>
+
+                      <div>
+                        <div className="case-section-title">Prescription Summary</div>
+                        <div style={{ background: 'var(--neutral-25)', padding: '12px', borderRadius: '10px', fontSize: '13px' }}>
+                          {prescriptionLines.length > 0 ? (
+                            prescriptionLines.map((line, idx) => (
+                              <div key={idx}>{line}</div>
+                            ))
+                          ) : (
+                            <span style={{ color: 'var(--neutral-400)' }}>No prescription recorded.</span>
+                          )}
                         </div>
-                      </>
-                    ) : (
-                      <p style={{ fontSize: '12px', color: 'var(--neutral-400)' }}>
-                        Add symptoms to this case to receive AI-powered remedy suggestions.
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* AI Insights & Context Panel */}
+                  <div>
+                    <div className="ai-insights-panel">
+                      <div className="ai-insights-header">
+                        <Sparkles size={20} color="var(--sage-600)" />
+                        AI Clinical Assistant
+                      </div>
+                      <p style={{ fontSize: 'var(--font-xs)', color: 'var(--neutral-600)', marginBottom: '16px' }}>
+                        Suggested remedy repertory match based on totality of symptoms:
                       </p>
-                    )}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {symptomsArray.length > 0 ? (
+                          <>
+                            <div style={{ background: 'white', padding: '10px', borderRadius: '8px', border: '1px solid var(--sage-200)' }}>
+                              <strong style={{ color: 'var(--sage-800)', fontSize: '13px' }}>1. Belladonna (92% Match)</strong>
+                              <p style={{ fontSize: '11px', color: 'var(--neutral-500)', marginTop: '2px' }}>High affinity for sudden violent headaches & photophobia.</p>
+                            </div>
+                            <div style={{ background: 'white', padding: '10px', borderRadius: '8px', border: '1px solid var(--sage-200)' }}>
+                              <strong style={{ color: 'var(--sage-800)', fontSize: '13px' }}>2. Spigelia (85% Match)</strong>
+                              <p style={{ fontSize: '11px', color: 'var(--neutral-500)', marginTop: '2px' }}>Left-sided neuralgic headache following sun exposure.</p>
+                            </div>
+                            <div style={{ background: 'white', padding: '10px', borderRadius: '8px', border: '1px solid var(--sage-200)' }}>
+                              <strong style={{ color: 'var(--sage-800)', fontSize: '13px' }}>3. Iris Versicolor (78% Match)</strong>
+                              <p style={{ fontSize: '11px', color: 'var(--neutral-500)', marginTop: '2px' }}>Sick headache with blurriness and bilious vomiting.</p>
+                            </div>
+                          </>
+                        ) : (
+                          <p style={{ fontSize: '12px', color: 'var(--neutral-400)' }}>
+                            Add symptoms to this case to receive AI-powered remedy suggestions.
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

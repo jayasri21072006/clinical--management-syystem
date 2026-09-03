@@ -1,4 +1,4 @@
-@echo off
+a@echo off
 title Clinical Management System - Full Stack Launcher
 echo.
 echo =====================================================

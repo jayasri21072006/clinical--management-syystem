@@ -1,40 +1,32 @@
 .appointments-page {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-4);
 }
 
 .appointments-timeline {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
-}
-
-.timeline-group-title {
-  font-size: var(--font-md);
-  font-weight: 700;
-  color: var(--sage-800);
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
+  gap: 0;
 }
 
 .timeline-cards {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: 10px;
 }
 
 .appointment-card {
   background: white;
   border-radius: var(--radius-lg);
-  padding: var(--space-4) var(--space-5);
+  padding: 14px 20px;
   border: 1px solid var(--neutral-100);
   display: flex;
   align-items: center;
   justify-content: space-between;
   box-shadow: var(--shadow-xs);
   transition: all var(--transition-base);
+  margin: 0;
 }
 
 .appointment-card:hover {
@@ -49,15 +41,61 @@
   gap: var(--space-4);
 }
 
-.appointment-time-badge {
+/* Professional Calendar Date Badge */
+.appointment-calendar-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  padding: 5px 8px;
   background: var(--sage-50);
-  color: var(--sage-700);
-  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--sage-200);
   border-radius: var(--radius-md);
-  font-weight: 700;
-  font-size: var(--font-sm);
-  min-width: 90px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
   text-align: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.cal-tile-month {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  color: var(--sage-700);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.cal-tile-day {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--neutral-900);
+  line-height: 1.1;
+}
+
+.cal-tile-weekday {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--neutral-500);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.appointment-time-badge {
+  background: white;
+  color: var(--neutral-700);
+  border: 1px solid var(--neutral-200);
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: var(--font-xs);
+  min-width: 96px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .appointment-patient-info {

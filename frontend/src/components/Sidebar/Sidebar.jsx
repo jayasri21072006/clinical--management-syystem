@@ -5,15 +5,12 @@ import {
   CalendarDays,
   Users,
   FileText,
-  Pill,
-  ShoppingCart,
-  ClipboardList,
-  BarChart3,
   Stethoscope,
   MapPin,
   ChevronLeft,
   ChevronRight,
   Leaf,
+  Sparkles,
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -22,23 +19,10 @@ const navSections = [
     title: 'Clinical',
     items: [
       { label: 'Dashboard', icon: LayoutDashboard, path: '/' },
+      { label: 'AI Assistant', icon: Sparkles, path: '/ai-assistant', badge: 'AI' },
       { label: 'Appointment', icon: CalendarDays, path: '/appointments', badge: 5 },
       { label: 'Patient', icon: Users, path: '/patients' },
       { label: 'Case Summary', icon: FileText, path: '/case-summary' },
-    ],
-  },
-  {
-    title: 'Pharmacy',
-    items: [
-      { label: 'Medical Inventory', icon: Pill, path: '/medical-inventory' },
-      { label: 'Retail Selling', icon: ShoppingCart, path: '/retail-selling' },
-    ],
-  },
-  {
-    title: 'Finance',
-    items: [
-      { label: 'Purchase Orders', icon: ClipboardList, path: '/purchase-orders' },
-      { label: 'Reports', icon: BarChart3, path: '/reports' },
     ],
   },
   {

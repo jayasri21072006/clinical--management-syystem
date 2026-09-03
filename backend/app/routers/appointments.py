@@ -56,7 +56,8 @@ def create_appointment(apt_in: AppointmentCreate, db: Session = Depends(get_db))
         doctor=apt_in.doctor,
         status=apt_in.status,
         type=apt_in.type,
-        date_group=apt_in.date_group
+        date_group=apt_in.date_group,
+        date=apt_in.date
     )
     db.add(new_apt)
     db.commit()
@@ -74,6 +75,8 @@ def update_appointment(appointment_id: int, apt_in: AppointmentCreate, db: Sessi
     apt.status = apt_in.status
     apt.type = apt_in.type
     apt.date_group = apt_in.date_group
+    if apt_in.date:
+        apt.date = apt_in.date
     db.commit()
     db.refresh(apt)
     return apt

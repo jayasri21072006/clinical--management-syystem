@@ -1,3 +1,15 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+*.env
+backend/.env
+
+# Databases
+*.db
+*.sqlite3
+backend/clinical.db
+
 # Python
 __pycache__/
 *.py[cod]
@@ -5,8 +17,7 @@ __pycache__/
 venv/
 env/
 .venv/
-*.db
-*.sqlite3
+backend/venv/
 
 # Node.js
 node_modules/
