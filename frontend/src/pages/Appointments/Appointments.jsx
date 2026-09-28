@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Calendar, Clock, Plus, Filter, Search, X, RefreshCw, Edit3, Download, MessageSquare } from 'lucide-react';
+import { Calendar, Clock, Plus, Filter, Search, X, RefreshCw, Edit3, Download } from 'lucide-react';
 import Header from '../../components/Header/Header.jsx';
 import api from '../../services/api.js';
 import './Appointments.css';
@@ -314,16 +314,6 @@ const Appointments = () => {
                     <span className={`badge ${apt.status === 'Confirmed' ? 'badge-success' : apt.status === 'In Progress' ? 'badge-info' : apt.status === 'Completed' ? 'badge-success' : 'badge-warning'}`}>
                       {apt.status}
                     </span>
-                    <a
-                      href={`https://wa.me/?text=${encodeURIComponent(`Hello ${apt.patient}, this is a reminder from Sage Green Wellness Clinic for your appointment with ${apt.doctor} on ${apt.date || 'scheduled date'} at ${cleanTime(apt.time)}.`)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-secondary btn-sm"
-                      title="Send 1-Click WhatsApp appointment reminder"
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#1B5E20', textDecoration: 'none' }}
-                    >
-                      <MessageSquare size={12} /> WhatsApp
-                    </a>
                     <button className="btn btn-secondary btn-sm" onClick={() => openEditModal(apt)}>
                       <Edit3 size={12} style={{ marginRight: '4px' }} /> Edit
                     </button>

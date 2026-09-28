@@ -12,7 +12,6 @@ import {
   Leaf,
   Sparkles,
   BarChart3,
-  ShieldCheck,
   Package,
   Pill,
 } from 'lucide-react';
@@ -68,7 +67,6 @@ const Sidebar = () => {
       title: 'Clinical AI Intelligence',
       items: [
         { label: 'Clinical AI', icon: Sparkles, path: '/ai-assistant' },
-        { label: 'Risk Prediction', icon: ShieldCheck, path: '/risk-prediction' },
       ],
     },
     {

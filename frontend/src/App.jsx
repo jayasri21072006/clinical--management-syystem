@@ -12,7 +12,6 @@ import Physician from './pages/Physician/Physician.jsx';
 import Location from './pages/Location/Location.jsx';
 import AIAssistant from './pages/AIAssistant/AIAssistant.jsx';
 import MedicalInventory from './pages/MedicalInventory/MedicalInventory.jsx';
-import RiskPrediction from './pages/RiskPrediction/RiskPrediction.jsx';
 import { Sparkles } from 'lucide-react';
 
 import './App.css';
@@ -50,7 +49,6 @@ function App() {
           <Route path="/case-summary" element={<CaseSummary />} />
           <Route path="/physician" element={<Physician />} />
           <Route path="/ai-assistant" element={<AIAssistant />} />
-          <Route path="/risk-prediction" element={<RiskPrediction />} />
           <Route path="/medical-inventory" element={<MedicalInventory />} />
           <Route path="/purchase-orders" element={<PurchaseOrders />} />
           <Route path="/reports" element={<Reports />} />
