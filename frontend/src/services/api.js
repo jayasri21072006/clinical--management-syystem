@@ -48,9 +48,14 @@ export const api = {
   deleteAppointment: (id) => request(`/appointments/${id}`, { method: 'DELETE' }),
 
 
+  // Inventory
+  getInventory: () => request('/inventory'),
+  createInventory: (data) => request('/inventory', { method: 'POST', body: JSON.stringify(data) }),
+
   // Physicians
   getPhysicians: () => request('/physicians'),
   createPhysician: (data) => request('/physicians', { method: 'POST', body: JSON.stringify(data) }),
+  updatePhysician: (id, data) => request(`/physicians/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
 
   // Dashboard
   getDashboardStats: () => request('/dashboard/stats'),

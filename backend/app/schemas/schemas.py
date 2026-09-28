@@ -72,6 +72,13 @@ class PhysicianCreate(BaseModel):
     patients: int = 0
     status: str = "Active"
 
+class PhysicianUpdate(BaseModel):
+    name: Optional[str] = None
+    qual: Optional[str] = None
+    exp: Optional[str] = None
+    patients: Optional[int] = None
+    status: Optional[str] = None
+
 class PhysicianResponse(BaseModel):
     id: int
     name: str

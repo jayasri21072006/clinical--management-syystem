@@ -22,6 +22,8 @@ from app.schemas.schemas import (
 from app.services.deidentifier import ClinicalDeidentifier
 from app.services.gemini_service import gemini_service, MANDATORY_AI_DISCLAIMER
 from app.services.ai_gateway import ai_gateway
+from app.database import SessionLocal
+from app.models.models import PatientModel, AppointmentModel, PhysicianModel, InventoryModel, CaseSummaryModel
 
 router = APIRouter(prefix="/api/chat", tags=["Support Chat"])
 
@@ -35,6 +37,39 @@ _sessions_lock = threading.Lock()
 MAX_SESSION_TURNS = 10
 
 
+def _get_hospital_context_summary() -> str:
+    """Extracts a structured summary of active patients, doctors, and cases from the hospital database."""
+    try:
+        db = SessionLocal()
+        patients = db.query(PatientModel).all()
+        physicians = db.query(PhysicianModel).all()
+        cases = db.query(CaseSummaryModel).all()
+        appointments = db.query(AppointmentModel).all()
+        db.close()
+
+        patient_list = []
+        for p in patients:
+            patient_list.append(f"- ID #{p.id}: {p.name}, Age: {p.age}, Gender: {p.gender}, Status: {p.status}")
+
+        doc_list = []
+        for doc in physicians:
+            doc_list.append(f"- Dr. {doc.name} ({doc.qual}, Exp: {doc.exp}, Active Patients: {doc.patients})")
+
+        case_list = []
+        for c in cases:
+            case_list.append(f"- Patient: {c.patient_name} (Age: {c.age}) | Complaint: {c.chief_complaints} | Diagnosis: {c.diagnosis}")
+
+        return (
+            f"\n[Hospital System Database Snapshot]\n"
+            f"Total Registered Patients: {len(patients)}\n"
+            f"Patients in Database:\n" + ("\n".join(patient_list[:30]) if patient_list else "No patients found.") + "\n\n"
+            f"Doctors / Physicians:\n" + ("\n".join(doc_list[:10]) if doc_list else "No doctors found.") + "\n\n"
+            f"Active Case Records:\n" + ("\n".join(case_list[:10]) if case_list else "No cases.") + "\n"
+        )
+    except Exception as e:
+        return ""
+
+
 def _get_or_create_session(session_id: Optional[str]) -> tuple[str, deque]:
     """Returns (session_id, context_deque). Creates new session if needed."""
     with _sessions_lock:
@@ -45,15 +80,17 @@ def _get_or_create_session(session_id: Optional[str]) -> tuple[str, deque]:
 
 
 def _build_context_prompt(context: deque, current_message: str) -> str:
-    """Builds a conversation-aware prompt from session history (de-identified only)."""
-    if not context:
-        return current_message
-    history_lines = []
-    for role, text in context:
-        prefix = "Clinician" if role == "user" else "AI"
-        history_lines.append(f"{prefix}: {text[:200]}")  # truncate for token efficiency
-    history_str = "\n".join(history_lines[-6:])  # last 3 turns
-    return f"[Conversation History (de-identified)]\n{history_str}\n\n[Current Query]\n{current_message}"
+    """Builds a conversation-aware prompt from session history and hospital database snapshot."""
+    history_str = ""
+    if context:
+        history_lines = []
+        for role, text in context:
+            prefix = "Clinician" if role == "user" else "AI"
+            history_lines.append(f"{prefix}: {text[:200]}")
+        history_str = "[Conversation History (de-identified)]\n" + "\n".join(history_lines[-6:]) + "\n\n"
+
+    hospital_ctx = _get_hospital_context_summary()
+    return f"{hospital_ctx}\n{history_str}[Current Query]\n{current_message}"
 
 
 # ─────────────────────────────────────────────────────────

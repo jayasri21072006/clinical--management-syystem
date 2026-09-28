@@ -102,6 +102,104 @@
   --header-height: 0px;
 }
 
+/* ---------- Dark Theme / High Contrast Theme (Section 4 Enhancement 5) ---------- */
+.dark-theme,
+[data-theme="dark"] {
+  --surface-primary: #18221b;
+  --surface-secondary: #121914;
+  --surface-glass: rgba(24, 34, 27, 0.88);
+  --surface-glass-hover: rgba(30, 44, 35, 0.95);
+  --surface-dark-glass: rgba(0, 0, 0, 0.35);
+
+  --neutral-900: #F3F6F4;
+  --neutral-800: #E2E8E4;
+  --neutral-700: #CBD3CE;
+  --neutral-600: #9CA7A0;
+  --neutral-500: #7B8880;
+  --neutral-400: #5A665F;
+  --neutral-300: #3D4841;
+  --neutral-200: #29332D;
+  --neutral-100: #1E2721;
+  --neutral-50: #141B16;
+  --neutral-25: #0F1411;
+
+  --sage-25: #0D1310;
+  --sage-50: #142018;
+  --sage-100: #1D3025;
+  --sage-200: #294434;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.45);
+  --shadow-card-hover: 0 12px 40px rgba(0, 0, 0, 0.55);
+}
+
+.dark-theme body,
+body.dark-theme {
+  background: var(--sage-25) !important;
+  color: var(--neutral-800) !important;
+}
+
+.dark-theme .header,
+.dark-theme .sidebar,
+.dark-theme .card,
+.dark-theme .patients-list-card,
+.dark-theme .physician-card,
+.dark-theme .modal-content,
+.dark-theme .stat-card,
+.dark-theme .inventory-card,
+.dark-theme .po-card,
+.dark-theme .location-card,
+.dark-theme .chat-container,
+.dark-theme .floating-ai-btn {
+  background: var(--surface-primary) !important;
+  border-color: var(--neutral-200) !important;
+  color: var(--neutral-800) !important;
+}
+
+.dark-theme input,
+.dark-theme select,
+.dark-theme textarea {
+  background: var(--surface-secondary) !important;
+  color: var(--neutral-800) !important;
+  border-color: var(--neutral-300) !important;
+}
+
+.dark-theme .patients-table th,
+.dark-theme .table th {
+  background: var(--neutral-100) !important;
+  color: var(--neutral-600) !important;
+  border-color: var(--neutral-200) !important;
+}
+
+.dark-theme .patients-table td,
+.dark-theme .table td {
+  border-color: var(--neutral-200) !important;
+  color: var(--neutral-700) !important;
+}
+
+.dark-theme .patients-table tr:hover td,
+.dark-theme .table tr:hover td {
+  background: var(--neutral-50) !important;
+}
+
+.dark-theme .patients-search-box {
+  background: var(--surface-secondary) !important;
+  border-color: var(--neutral-300) !important;
+}
+
+.dark-theme .patients-filter-chip {
+  background: var(--neutral-100) !important;
+  color: var(--neutral-600) !important;
+  border-color: var(--neutral-300) !important;
+}
+
+.dark-theme .patients-filter-chip.active {
+  background: var(--sage-700) !important;
+  color: #FFFFFF !important;
+}
+
 /* ---------- Reset & Base ---------- */
 *,
 *::before,

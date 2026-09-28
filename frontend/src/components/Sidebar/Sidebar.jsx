@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -11,32 +11,87 @@ import {
   ChevronRight,
   Leaf,
   Sparkles,
+  BarChart3,
+  ShieldCheck,
+  Package,
+  Pill,
 } from 'lucide-react';
+import api from '../../services/api.js';
 import './Sidebar.css';
-
-const navSections = [
-  {
-    title: 'Clinical',
-    items: [
-      { label: 'Dashboard', icon: LayoutDashboard, path: '/' },
-      { label: 'AI Assistant', icon: Sparkles, path: '/ai-assistant', badge: 'AI' },
-      { label: 'Appointment', icon: CalendarDays, path: '/appointments', badge: 5 },
-      { label: 'Patient', icon: Users, path: '/patients' },
-      { label: 'Case Summary', icon: FileText, path: '/case-summary' },
-    ],
-  },
-  {
-    title: 'Admin',
-    items: [
-      { label: 'Physician', icon: Stethoscope, path: '/physician' },
-      { label: 'Location', icon: MapPin, path: '/location' },
-    ],
-  },
-];
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [lowStockCount, setLowStockCount] = useState(3);
+  const [todayAptsCount, setTodayAptsCount] = useState(5);
   const location = useLocation();
+
+  useEffect(() => {
+    const loadSidebarStats = async () => {
+      try {
+        const stats = await api.getDashboardStats();
+        if (stats) {
+          if (stats.todayAppointmentsCount !== undefined) {
+            setTodayAptsCount(stats.todayAppointmentsCount);
+          }
+          if (stats.lowStockAlerts && Array.isArray(stats.lowStockAlerts)) {
+            setLowStockCount(stats.lowStockAlerts.length);
+          }
+        }
+      } catch (err) {
+        // Fallback to checking inventory directly
+        try {
+          const inv = await api.getInventory();
+          if (Array.isArray(inv)) {
+            const low = inv.filter((item) => (Number(item.stock) || 0) < 5).length;
+            setLowStockCount(low);
+          }
+        } catch (e) {
+          console.warn('Could not load sidebar badges:', e);
+        }
+      }
+    };
+    loadSidebarStats();
+  }, []);
+
+  const navSections = [
+    {
+      title: 'Clinical Operations',
+      items: [
+        { label: 'Dashboard', icon: LayoutDashboard, path: '/' },
+        { label: 'Patients', icon: Users, path: '/patients' },
+        { label: 'Appointments', icon: CalendarDays, path: '/appointments', badge: todayAptsCount },
+        { label: 'Case Summary', icon: FileText, path: '/case-summary' },
+        { label: 'Physician', icon: Stethoscope, path: '/physician' },
+      ],
+    },
+    {
+      title: 'Clinical AI Intelligence',
+      items: [
+        { label: 'Clinical AI', icon: Sparkles, path: '/ai-assistant' },
+        { label: 'Risk Prediction', icon: ShieldCheck, path: '/risk-prediction' },
+      ],
+    },
+    {
+      title: 'Pharmacy & Stock',
+      items: [
+        {
+          label: 'Medical Inventory',
+          icon: Pill,
+          path: '/medical-inventory',
+          badge: lowStockCount > 0 ? `! ${lowStockCount}` : null,
+          badgeType: 'warning'
+        },
+      ],
+    },
+    {
+      title: 'Administration',
+      items: [
+        { label: 'Purchase Orders', icon: Package, path: '/purchase-orders' },
+        { label: 'Reports', icon: BarChart3, path: '/reports' },
+        { label: 'Branch Locations', icon: MapPin, path: '/location' },
+      ],
+    },
+  ];
 
   return (
     <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
@@ -79,7 +134,9 @@ const Sidebar = () => {
                   </span>
                   <span className="sidebar-link-text">{item.label}</span>
                   {item.badge && (
-                    <span className="sidebar-link-badge">{item.badge}</span>
+                    <span className={`sidebar-link-badge ${item.badgeType === 'warning' ? 'badge-warning' : ''}`}>
+                      {item.badge}
+                    </span>
                   )}
                 </NavLink>
               );
@@ -103,3 +160,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+

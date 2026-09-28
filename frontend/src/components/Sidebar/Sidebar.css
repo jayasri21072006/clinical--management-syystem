@@ -204,6 +204,14 @@
   padding: 0 6px;
 }
 
+.sidebar-link-badge.badge-warning {
+  background: #E68A00;
+  color: #FFFFFF;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(230, 138, 0, 0.4);
+  letter-spacing: 0.5px;
+}
+
 .sidebar.collapsed .sidebar-link-badge {
   position: absolute;
   top: 2px;

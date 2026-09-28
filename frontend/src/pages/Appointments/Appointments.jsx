@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Calendar, Clock, Plus, Filter, Search, X, RefreshCw, Edit3 } from 'lucide-react';
+import { Calendar, Clock, Plus, Filter, Search, X, RefreshCw, Edit3, Download, MessageSquare } from 'lucide-react';
 import Header from '../../components/Header/Header.jsx';
 import api from '../../services/api.js';
 import './Appointments.css';
@@ -173,6 +173,35 @@ const Appointments = () => {
     }
   };
 
+  // One-Click Export to CSV (Section 4 Enhancement 1)
+  const exportToCSV = () => {
+    if (!appointments.length) {
+      alert('No appointment records to export');
+      return;
+    }
+    const headers = ['ID', 'Date', 'Time', 'Patient Name', 'Doctor', 'Visit Type', 'Status'];
+    const rows = appointments.map((a) => {
+      const parsed = parseAppointmentDate(a);
+      return [
+        a.id,
+        `"${a.date || parsed.raw}"`,
+        `"${cleanTime(a.time)}"`,
+        `"${(a.patient || '').replace(/"/g, '""')}"`,
+        `"${(a.doctor || '').replace(/"/g, '""')}"`,
+        `"${a.type || ''}"`,
+        `"${a.status || ''}"`
+      ];
+    });
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `appointments_export_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // Build dynamic filter lists from DB
   const statusFilters = ['All', ...filterOptions.statuses];
   const typeFilters = ['All', ...filterOptions.types];
@@ -182,6 +211,15 @@ const Appointments = () => {
       <Header title="Appointments" subtitle="Timeline & Scheduling">
         <button className="btn-refresh" onClick={() => { loadFilters(); loadAppointments(); }} title="Refresh" style={{ marginRight: '8px' }}>
           <RefreshCw size={16} />
+        </button>
+        <button
+          className="btn btn-secondary"
+          onClick={exportToCSV}
+          title="Download active appointments as CSV spreadsheet"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '9px 16px', borderRadius: '10px', marginRight: '8px' }}
+        >
+          <Download size={16} />
+          Export CSV
         </button>
         <button className="btn-add-patient" onClick={openAddModal}>
           <Plus size={16} /> Book Appointment
@@ -276,6 +314,16 @@ const Appointments = () => {
                     <span className={`badge ${apt.status === 'Confirmed' ? 'badge-success' : apt.status === 'In Progress' ? 'badge-info' : apt.status === 'Completed' ? 'badge-success' : 'badge-warning'}`}>
                       {apt.status}
                     </span>
+                    <a
+                      href={`https://wa.me/?text=${encodeURIComponent(`Hello ${apt.patient}, this is a reminder from Sage Green Wellness Clinic for your appointment with ${apt.doctor} on ${apt.date || 'scheduled date'} at ${cleanTime(apt.time)}.`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-secondary btn-sm"
+                      title="Send 1-Click WhatsApp appointment reminder"
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#1B5E20', textDecoration: 'none' }}
+                    >
+                      <MessageSquare size={12} /> WhatsApp
+                    </a>
                     <button className="btn btn-secondary btn-sm" onClick={() => openEditModal(apt)}>
                       <Edit3 size={12} style={{ marginRight: '4px' }} /> Edit
                     </button>

@@ -281,63 +281,7 @@ const Reports = () => {
         </button>
       </Header>
 
-      {/* Featured AI Safety Banner Card */}
-      <div className="card fade-in-up" style={{
-        padding: '24px',
-        marginBottom: '24px',
-        background: 'linear-gradient(135deg, #064e3b 0%, #0f172a 100%)',
-        color: '#ffffff',
-        border: '1px solid rgba(52, 211, 153, 0.3)',
-        borderRadius: '16px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: '16px'
-      }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-            <ShieldCheck size={24} className="text-emerald-400" />
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, color: '#f8fafc' }}>
-              Gemini AI Clinical Safety & Governance Audit
-            </h2>
-            <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '9999px', background: 'rgba(52, 211, 153, 0.2)', color: '#34d399', border: '1px solid rgba(52, 211, 153, 0.4)', fontWeight: 700 }}>
-              Live Model Active
-            </span>
-          </div>
-          <p style={{ margin: 0, fontSize: '0.88rem', color: '#cbd5e1', maxWidth: '650px' }}>
-            Generate and audit comprehensive patient risk matrices, drug interaction warnings, and HIPAA de-identification compliance logs using Google Gemini 2.5 Flash.
-          </p>
-        </div>
-        <button
-          onClick={handleGenerateSafetyReport}
-          disabled={aiReportLoading}
-          style={{
-            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-            color: 'white',
-            border: 'none',
-            padding: '12px 20px',
-            borderRadius: '10px',
-            fontWeight: 700,
-            fontSize: '0.9rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)'
-          }}
-        >
-          {aiReportLoading ? (
-            <>
-              <RefreshCw className="animate-spin" size={18} /> Generating with Gemini...
-            </>
-          ) : (
-            <>
-              <Sparkles size={18} /> Run Safety & Risk Audit
-            </>
-          )}
-        </button>
-      </div>
+
 
       {loading ? (
         <div style={{ padding: '40px', textAlign: 'center', color: 'var(--neutral-500)' }}>

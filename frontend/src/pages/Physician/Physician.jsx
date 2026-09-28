@@ -32,6 +32,19 @@ const Physician = () => {
     loadPhysicians();
   }, []);
 
+  const handleStatusChange = async (docId, newStatus) => {
+    // Optimistic UI update
+    setPhysicians((prev) =>
+      prev.map((d) => (d.id === docId ? { ...d, status: newStatus } : d))
+    );
+    try {
+      await api.updatePhysician(docId, { status: newStatus });
+    } catch (err) {
+      console.error('Failed to update physician status:', err);
+      loadPhysicians();
+    }
+  };
+
   const handleAddDoctor = async (e) => {
     e.preventDefault();
     if (!formData.name.trim()) return;
@@ -39,7 +52,7 @@ const Physician = () => {
     try {
       await api.createPhysician({ ...formData, patients: parseInt(formData.patients, 10) || 0 });
       setShowModal(false);
-      setFormData({ name: '', qual: 'BHMS, MD (Homeopathy)', exp: '5 years exp', patients: 100, status: 'Active' });
+      setFormData({ name: '', qual: 'BHMS, MD (Homeopathy)', exp: '5 years exp', patients: 100, status: 'Available' });
       await loadPhysicians();
     } catch (err) {
       alert('Failed to register physician.');
@@ -48,7 +61,7 @@ const Physician = () => {
 
   return (
     <div className="physician-page">
-      <Header title="Physician Directory" subtitle="Doctors Profile & Consultation Schedules">
+      <Header title="Physician Directory" subtitle="Doctors Profile, Availability & Consultation Schedules">
         <button className="btn-add-patient" onClick={() => setShowModal(true)}>
           <Plus size={16} /> Add Physician
         </button>
@@ -66,7 +79,7 @@ const Physician = () => {
                 <div className="avatar avatar-lg" style={{ background: 'var(--sage-700)' }}>
                   {doc.name.split(' ')[1]?.charAt(0) || doc.name.charAt(0)}
                 </div>
-                <div>
+                <div style={{ flex: 1 }}>
                   <h3 style={{ fontSize: 'var(--font-md)', fontWeight: 700 }}>{doc.name}</h3>
                   <p style={{ fontSize: 'var(--font-xs)', color: 'var(--neutral-500)' }}>{doc.qual}</p>
                 </div>
@@ -75,6 +88,54 @@ const Physician = () => {
               <div style={{ fontSize: 'var(--font-xs)', color: 'var(--neutral-600)', background: 'var(--neutral-25)', padding: '10px', borderRadius: '8px' }}>
                 <div><strong>Experience:</strong> {doc.exp}</div>
                 <div><strong>Patients Consulted:</strong> {doc.patients}</div>
+              </div>
+
+              {/* Section 4 Enhancement 4: Doctor Availability & On-Duty Toggle */}
+              <div style={{ borderTop: '1px solid var(--neutral-100)', paddingTop: '10px' }}>
+                <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--neutral-500)', marginBottom: '6px' }}>
+                  On-Duty Availability:
+                </div>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  {['Available', 'In Consultation', 'Off Duty'].map((s) => {
+                    const isSelected = (doc.status || 'Available') === s || (s === 'Available' && doc.status === 'Active');
+                    return (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => handleStatusChange(doc.id, s)}
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          padding: '4px 10px',
+                          borderRadius: '12px',
+                          border: '1px solid',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          borderColor: isSelected
+                            ? (s === 'Available' ? '#2E7D4F' : s === 'In Consultation' ? '#E68A00' : '#7A7F7B')
+                            : 'var(--neutral-200)',
+                          background: isSelected
+                            ? (s === 'Available' ? '#E8F5E9' : s === 'In Consultation' ? '#FFF3E0' : 'var(--neutral-100)')
+                            : 'transparent',
+                          color: isSelected
+                            ? (s === 'Available' ? '#1B5E20' : s === 'In Consultation' ? '#B76E00' : 'var(--neutral-700)')
+                            : 'var(--neutral-500)',
+                        }}
+                      >
+                        <span style={{
+                          width: '6px',
+                          height: '6px',
+                          borderRadius: '50%',
+                          backgroundColor: s === 'Available' ? '#2E7D4F' : s === 'In Consultation' ? '#E68A00' : '#9CA09D'
+                        }} />
+                        {s}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
             </div>

@@ -15,25 +15,25 @@ const OPERATION_LABELS = {
   safety_report: 'Safety Report',
 };
 
-const MODEL_COLORS = {
-  'gemini-2.5-pro': { bg: 'rgba(139, 92, 246, 0.2)', color: '#c4b5fd', border: 'rgba(139, 92, 246, 0.4)' },
-  'gemini-2.5-flash': { bg: 'rgba(56, 189, 248, 0.2)', color: '#7dd3fc', border: 'rgba(56, 189, 248, 0.4)' },
+const MODEL_BADGES = {
+  'gemini-2.5-pro': { bg: '#F5F3FF', color: '#6D28D9', border: '#DDD6FE', text: '⚡ Pro' },
+  'gemini-2.5-flash': { bg: '#F0F9FF', color: '#0369A1', border: '#BAE6FD', text: '🔵 Flash' },
 };
 
 const ValidationBadge = ({ status }) => {
   if (status === 'passed') return (
-    <span style={{ color: '#34d399', display: 'flex', alignItems: 'center', gap: 3, fontSize: '0.75rem' }}>
-      <CheckCircle2 size={12} /> Passed
+    <span style={{ color: '#2E7D4F', display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.78rem', fontWeight: 600 }}>
+      <CheckCircle2 size={13} /> Passed
     </span>
   );
   if (status === 'pii_echo_stripped') return (
-    <span style={{ color: '#fbbf24', display: 'flex', alignItems: 'center', gap: 3, fontSize: '0.75rem' }}>
-      <AlertTriangle size={12} /> PII Stripped
+    <span style={{ color: '#D97706', display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.78rem', fontWeight: 600 }}>
+      <AlertTriangle size={13} /> PII Stripped
     </span>
   );
   return (
-    <span style={{ color: '#f87171', display: 'flex', alignItems: 'center', gap: 3, fontSize: '0.75rem' }}>
-      <XCircle size={12} /> {status}
+    <span style={{ color: '#DC2626', display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.78rem', fontWeight: 600 }}>
+      <XCircle size={13} /> {status}
     </span>
   );
 };
@@ -73,12 +73,12 @@ const AuditLogPanel = () => {
   }, [autoRefresh, fetchData]);
 
   const statCards = stats ? [
-    { label: 'Total Requests', value: stats.total_requests, icon: Activity, color: '#38bdf8' },
-    { label: 'PHI Detections', value: stats.pii_detections, icon: Lock, color: '#fbbf24' },
-    { label: 'Injection Blocks', value: stats.injection_blocks, icon: Ban, color: '#f87171' },
-    { label: 'Pro Model Uses', value: stats.pro_model_uses, icon: Cpu, color: '#c4b5fd' },
-    { label: 'Flash Model Uses', value: stats.flash_model_uses, icon: Zap, color: '#34d399' },
-    { label: 'Requests Blocked', value: stats.requests_blocked, icon: XCircle, color: '#fb923c' },
+    { label: 'Total Requests', value: stats.total_requests, icon: Activity, color: '#0284C7', bg: '#F0F9FF', border: '#BAE6FD' },
+    { label: 'PHI Detections', value: stats.pii_detections, icon: Lock, color: '#D97706', bg: '#FFFBEB', border: '#FDE68A' },
+    { label: 'Injection Blocks', value: stats.injection_blocks, icon: Ban, color: '#DC2626', bg: '#FEF2F2', border: '#FECACA' },
+    { label: 'Pro Model Uses', value: stats.pro_model_uses, icon: Cpu, color: '#7C3AED', bg: '#F5F3FF', border: '#DDD6FE' },
+    { label: 'Flash Model Uses', value: stats.flash_model_uses, icon: Zap, color: '#2D5A3D', bg: '#E8F5E9', border: '#A8D5BA' },
+    { label: 'Requests Blocked', value: stats.requests_blocked, icon: XCircle, color: '#EA580C', bg: '#FFF7ED', border: '#FED7AA' },
   ] : [];
 
   return (
@@ -86,18 +86,32 @@ const AuditLogPanel = () => {
 
       {/* Stats Banner */}
       {stats && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '0.75rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.85rem' }}>
           {statCards.map((card, idx) => (
             <div key={idx} style={{
-              background: 'rgba(15, 23, 42, 0.8)',
-              border: '1px solid rgba(255,255,255,0.08)',
+              background: '#FFFFFF',
+              border: '1px solid var(--neutral-200, #DFE1E0)',
               borderRadius: '12px',
-              padding: '1rem',
-              textAlign: 'center'
+              padding: '1.1rem 0.85rem',
+              textAlign: 'center',
+              boxShadow: 'var(--shadow-xs, 0 1px 2px rgba(0, 0, 0, 0.04))',
+              transition: 'transform 0.15s ease, box-shadow 0.15s ease'
             }}>
-              <card.icon size={20} style={{ color: card.color, margin: '0 auto 0.4rem' }} />
-              <div style={{ fontSize: '1.4rem', fontWeight: 800, color: card.color }}>{card.value ?? 0}</div>
-              <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginTop: '0.2rem' }}>{card.label}</div>
+              <div style={{
+                width: 36,
+                height: 36,
+                borderRadius: '50%',
+                background: card.bg,
+                border: `1px solid ${card.border}`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 0.5rem auto'
+              }}>
+                <card.icon size={18} style={{ color: card.color }} />
+              </div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: card.color }}>{card.value ?? 0}</div>
+              <div style={{ fontSize: '0.76rem', color: 'var(--neutral-600, #5A5F5B)', marginTop: '0.2rem', fontWeight: 500 }}>{card.label}</div>
             </div>
           ))}
         </div>
@@ -106,45 +120,34 @@ const AuditLogPanel = () => {
       {/* Header controls */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <Shield size={20} style={{ color: '#34d399' }} />
+          <Shield size={22} style={{ color: 'var(--sage-700, #3A6B4E)' }} />
           <div>
-            <div style={{ fontWeight: 700, color: '#f8fafc', fontSize: '0.95rem' }}>AI Security Audit Log</div>
-            <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
+            <div style={{ fontWeight: 700, color: 'var(--neutral-900, #1A1D1B)', fontSize: '1rem' }}>AI Security Audit Log</div>
+            <div style={{ fontSize: '0.78rem', color: 'var(--neutral-500, #7A7F7B)' }}>
               No raw clinical text stored · De-identified metadata only · HIPAA Compliant
             </div>
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
           {lastRefresh && (
-            <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: 4 }}>
-              <Clock size={11} /> {lastRefresh.toLocaleTimeString()}
+            <span style={{ fontSize: '0.78rem', color: 'var(--neutral-500, #7A7F7B)', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <Clock size={12} /> {lastRefresh.toLocaleTimeString()}
             </span>
           )}
-          <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: '#94a3b8', cursor: 'pointer' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.82rem', color: 'var(--neutral-700, #3E433F)', cursor: 'pointer', fontWeight: 500 }}>
             <input
               type="checkbox"
               checked={autoRefresh}
               onChange={e => setAutoRefresh(e.target.checked)}
-              style={{ accentColor: '#34d399' }}
+              style={{ accentColor: 'var(--sage-700, #3A6B4E)' }}
             />
             Auto-refresh (30s)
           </label>
           <button
             onClick={fetchData}
             disabled={loading}
-            style={{
-              background: 'rgba(52, 211, 153, 0.15)',
-              border: '1px solid rgba(52, 211, 153, 0.3)',
-              color: '#34d399',
-              padding: '0.4rem 0.9rem',
-              borderRadius: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              cursor: 'pointer',
-              fontSize: '0.8rem',
-              fontWeight: 600
-            }}
+            className="ai-btn-secondary"
+            style={{ padding: '0.45rem 0.9rem', fontSize: '0.82rem' }}
           >
             <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />
             Refresh
@@ -154,27 +157,27 @@ const AuditLogPanel = () => {
 
       {/* Empty state */}
       {entries.length === 0 && !loading && (
-        <div style={{ textAlign: 'center', padding: '4rem 2rem', color: '#475569' }}>
-          <Eye size={40} style={{ margin: '0 auto 1rem' }} />
-          <div style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.4rem' }}>No audit entries yet</div>
-          <div style={{ fontSize: '0.85rem' }}>Audit entries will appear here after any AI operation is performed.</div>
+        <div className="ai-empty-state">
+          <Eye size={42} className="ai-empty-icon" />
+          <div className="ai-empty-title">No audit entries yet</div>
+          <div className="ai-empty-desc">Audit entries will appear here automatically whenever an AI operation is performed.</div>
         </div>
       )}
 
       {/* Audit Table */}
       {entries.length > 0 && (
-        <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+        <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid var(--neutral-200, #DFE1E0)', background: '#FFFFFF', boxShadow: 'var(--shadow-xs)' }}>
+          <table className="ai-table">
             <thead>
-              <tr style={{ background: 'rgba(2, 6, 23, 0.9)', color: '#64748b', textAlign: 'left', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                <th style={{ padding: '0.75rem 1rem' }}>ID</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Time</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Operation</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Model</th>
-                <th style={{ padding: '0.75rem 1rem' }}>PHI</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Injection</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Validation</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Status</th>
+              <tr>
+                <th>ID</th>
+                <th>Timestamp</th>
+                <th>Operation</th>
+                <th>Model</th>
+                <th>PHI Scrubbed</th>
+                <th>Injection Check</th>
+                <th>Validation</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
@@ -183,92 +186,92 @@ const AuditLogPanel = () => {
                 const isInjection = entry.injection_blocked;
                 const isRateLimited = entry.rate_limited;
                 const rowBg = isBlocked
-                  ? 'rgba(239, 68, 68, 0.06)'
+                  ? '#FEF2F2'
                   : entry.pii_detected
-                    ? 'rgba(245, 158, 11, 0.05)'
-                    : idx % 2 === 0 ? 'rgba(15, 23, 42, 0.5)' : 'transparent';
+                    ? '#FFFBEB'
+                    : idx % 2 === 0 ? '#FFFFFF' : 'var(--neutral-25, #FAFBFA)';
 
-                const modelStyle = MODEL_COLORS[entry.model_used] || MODEL_COLORS['gemini-2.5-flash'];
+                const badge = MODEL_BADGES[entry.model_used] || MODEL_BADGES['gemini-2.5-flash'];
                 const ts = new Date(entry.timestamp);
                 const timeStr = ts.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
                 const dateStr = ts.toLocaleDateString([], { month: 'short', day: 'numeric' });
 
                 return (
-                  <tr key={entry.request_id + idx} style={{ background: rowBg, borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                  <tr key={entry.request_id + idx} style={{ background: rowBg }}>
                     {/* ID */}
-                    <td style={{ padding: '0.65rem 1rem', color: '#64748b', fontFamily: 'monospace', fontSize: '0.7rem' }}>
+                    <td style={{ color: 'var(--neutral-500, #7A7F7B)', fontFamily: 'monospace', fontSize: '0.74rem' }}>
                       {entry.request_id}
                     </td>
 
                     {/* Time */}
-                    <td style={{ padding: '0.65rem 1rem', color: '#94a3b8', whiteSpace: 'nowrap' }}>
-                      <div style={{ fontSize: '0.75rem' }}>{timeStr}</div>
-                      <div style={{ fontSize: '0.65rem', color: '#475569' }}>{dateStr}</div>
+                    <td style={{ whiteSpace: 'nowrap' }}>
+                      <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--neutral-800, #2C302D)' }}>{timeStr}</div>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--neutral-400, #9CA09D)' }}>{dateStr}</div>
                     </td>
 
                     {/* Operation */}
-                    <td style={{ padding: '0.65rem 1rem' }}>
-                      <span style={{ color: '#e2e8f0', fontWeight: 600 }}>
+                    <td>
+                      <span style={{ fontWeight: 600, color: 'var(--neutral-900, #1A1D1B)' }}>
                         {OPERATION_LABELS[entry.operation] || entry.operation}
                       </span>
                     </td>
 
                     {/* Model */}
-                    <td style={{ padding: '0.65rem 1rem' }}>
+                    <td>
                       <span style={{
-                        padding: '2px 8px',
+                        padding: '3px 8px',
                         borderRadius: '6px',
-                        fontSize: '0.7rem',
+                        fontSize: '0.72rem',
                         fontWeight: 700,
-                        background: modelStyle.bg,
-                        color: modelStyle.color,
-                        border: `1px solid ${modelStyle.border}`,
+                        background: badge.bg,
+                        color: badge.color,
+                        border: `1px solid ${badge.border}`,
                         whiteSpace: 'nowrap'
                       }}>
-                        {entry.model_used?.includes('pro') ? '⚡ Pro' : '🔵 Flash'}
+                        {badge.text}
                       </span>
                     </td>
 
                     {/* PHI */}
-                    <td style={{ padding: '0.65rem 1rem' }}>
+                    <td>
                       {entry.pii_detected ? (
-                        <span style={{ color: '#fbbf24', display: 'flex', alignItems: 'center', gap: 3, fontSize: '0.75rem' }}>
-                          <Lock size={11} /> {entry.pii_count} items
+                        <span style={{ color: '#D97706', display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.78rem', fontWeight: 600 }}>
+                          <Lock size={12} /> {entry.pii_count} scrubbed
                         </span>
                       ) : (
-                        <span style={{ color: '#475569', fontSize: '0.75rem' }}>None</span>
+                        <span style={{ color: 'var(--neutral-400, #9CA09D)', fontSize: '0.78rem' }}>None</span>
                       )}
                     </td>
 
                     {/* Injection */}
-                    <td style={{ padding: '0.65rem 1rem' }}>
+                    <td>
                       {entry.injection_detected ? (
-                        <span style={{ color: entry.injection_blocked ? '#f87171' : '#fbbf24', display: 'flex', alignItems: 'center', gap: 3, fontSize: '0.75rem' }}>
-                          <Ban size={11} /> {entry.injection_blocked ? 'Sanitized' : 'Detected'}
+                        <span style={{ color: entry.injection_blocked ? '#DC2626' : '#D97706', display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.78rem', fontWeight: 600 }}>
+                          <Ban size={12} /> {entry.injection_blocked ? 'Blocked' : 'Sanitized'}
                         </span>
                       ) : (
-                        <span style={{ color: '#475569', fontSize: '0.75rem' }}>Clean</span>
+                        <span style={{ color: '#2E7D4F', fontSize: '0.78rem', fontWeight: 600 }}>Clean</span>
                       )}
                     </td>
 
                     {/* Validation */}
-                    <td style={{ padding: '0.65rem 1rem' }}>
+                    <td>
                       <ValidationBadge status={entry.response_validation} />
                     </td>
 
                     {/* Status */}
-                    <td style={{ padding: '0.65rem 1rem' }}>
+                    <td>
                       {isRateLimited ? (
-                        <span style={{ color: '#fb923c', display: 'flex', alignItems: 'center', gap: 3, fontSize: '0.75rem' }}>
-                          <Ban size={11} /> Rate Limited
+                        <span style={{ color: '#EA580C', display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.78rem', fontWeight: 700 }}>
+                          <Ban size={12} /> Rate Limited
                         </span>
                       ) : isBlocked ? (
-                        <span style={{ color: '#f87171', display: 'flex', alignItems: 'center', gap: 3, fontSize: '0.75rem' }}>
-                          <XCircle size={11} /> Blocked
+                        <span style={{ color: '#DC2626', display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.78rem', fontWeight: 700 }}>
+                          <XCircle size={12} /> Blocked
                         </span>
                       ) : (
-                        <span style={{ color: '#34d399', display: 'flex', alignItems: 'center', gap: 3, fontSize: '0.75rem' }}>
-                          <CheckCircle2 size={11} /> Allowed
+                        <span style={{ color: '#2E7D4F', display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.78rem', fontWeight: 700 }}>
+                          <CheckCircle2 size={12} /> Allowed
                         </span>
                       )}
                     </td>
@@ -282,19 +285,19 @@ const AuditLogPanel = () => {
 
       {/* Compliance Footer */}
       <div style={{
-        background: 'rgba(16, 185, 129, 0.06)',
-        border: '1px solid rgba(16, 185, 129, 0.15)',
+        background: 'var(--sage-25, #F1F9F3)',
+        border: '1px solid var(--sage-200, #A8D5BA)',
         borderRadius: '10px',
-        padding: '0.75rem 1rem',
-        fontSize: '0.75rem',
-        color: '#64748b',
+        padding: '0.85rem 1.1rem',
+        fontSize: '0.8rem',
+        color: 'var(--neutral-700, #3E433F)',
         display: 'flex',
         alignItems: 'center',
-        gap: '0.5rem'
+        gap: '0.65rem'
       }}>
-        <Shield size={13} style={{ color: '#34d399', flexShrink: 0 }} />
+        <Shield size={16} style={{ color: 'var(--sage-700, #3A6B4E)', flexShrink: 0 }} />
         <span>
-          <strong style={{ color: '#34d399' }}>Privacy Guarantee:</strong> This audit log contains only metadata.
+          <strong style={{ color: 'var(--sage-900, #1A3D2B)' }}>Privacy Guarantee:</strong> This audit log contains only metadata.
           No raw clinical text, patient names, PHI, or AI prompt content is ever stored or displayed here.
           All entries are HIPAA-compliant sanitized records.
         </span>

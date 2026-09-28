@@ -33,3 +33,9 @@ frontend/.vite/
 *.log
 .DS_Store
 Thumbs.db
+
+# Documentation Exports & Local Reports
+*.doc
+*.docx
+Clinical_Management_System_Project_Report_files/
+generate_docx.py

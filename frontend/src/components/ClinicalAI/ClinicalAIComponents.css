@@ -1,0 +1,741 @@
+/* ─────────────────────────────────────────────
+   Clinical AI Subcomponents & Card Styling
+   Preserving Sage Green Palette: #2D5A4C, #4A7C6D, #E8F0EC
+   ───────────────────────────────────────────── */
+
+/* Modal Backdrop & Content */
+.clinical-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 30, 24, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.clinical-modal-content {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 580px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid #D1E0D9;
+  overflow: hidden;
+  animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalPop {
+  from { transform: scale(0.96); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.clinical-modal-header {
+  padding: 16px 20px;
+  background: #F3F7F5;
+  border-bottom: 1px solid #E2ECE7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.clinical-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 15px;
+  color: #2D5A4C;
+}
+
+.clinical-modal-close {
+  background: transparent;
+  border: none;
+  color: #64748B;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+
+.clinical-modal-close:hover {
+  background: #E2ECE7;
+  color: #1E293B;
+}
+
+.clinical-modal-body {
+  padding: 20px;
+}
+
+.source-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.source-meta-chip {
+  font-size: 12px;
+  background: #F1F5F9;
+  color: #475569;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.source-meta-chip.verified {
+  background: #E8F0EC;
+  color: #2D5A4C;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.source-content-box {
+  background: #FAFCFB;
+  border: 1px solid #E2ECE7;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.source-content-box h4 {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.source-content-box p {
+  font-size: 13.5px;
+  color: #334155;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.source-detail-table {
+  margin-top: 14px;
+  border-top: 1px solid #E2ECE7;
+  padding-top: 10px;
+}
+
+.sd-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  font-size: 12.5px;
+  padding: 6px 0;
+  border-bottom: 1px dashed #E2ECE7;
+}
+
+.sd-row.header {
+  font-weight: 600;
+  color: #64748B;
+  border-bottom: 1px solid #CBD5E1;
+}
+
+.sd-row .abnormal {
+  color: #D97706;
+  font-weight: 600;
+}
+
+.clinical-modal-footer {
+  padding: 12px 20px;
+  background: #F8FAFC;
+  border-top: 1px solid #E2ECE7;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-modal-secondary {
+  background: #ffffff;
+  border: 1px solid #CBD5E1;
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #475569;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-modal-secondary:hover {
+  background: #F1F5F9;
+}
+
+/* ─────────────────────────────────────────────
+   Clinical Timeline Component
+   ───────────────────────────────────────────── */
+.clinical-timeline-container {
+  padding: 10px 0;
+}
+
+.timeline-tree {
+  position: relative;
+  padding-left: 20px;
+}
+
+.timeline-tree::before {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  background: #D1E0D9;
+}
+
+.timeline-item-row {
+  position: relative;
+  margin-bottom: 14px;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.timeline-item-row:hover {
+  transform: translateX(3px);
+}
+
+.timeline-node {
+  position: absolute;
+  left: -20px;
+  top: 10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #2D5A4C;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 3px #ffffff, 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 2;
+}
+
+.timeline-content-card {
+  background: #ffffff;
+  border: 1px solid #E2ECE7;
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.timeline-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.timeline-date {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748B;
+}
+
+.timeline-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+  background: #E8F0EC;
+  color: #2D5A4C;
+}
+
+.timeline-title {
+  margin: 0 0 4px 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1E293B;
+}
+
+.timeline-desc {
+  margin: 0;
+  font-size: 12.5px;
+  color: #475569;
+}
+
+/* ─────────────────────────────────────────────
+   Structured Clinical Card Styling
+   ───────────────────────────────────────────── */
+.clinical-card-container {
+  background: #ffffff;
+  border: 1px solid #D1E0D9;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(45, 90, 76, 0.06);
+  padding: 16px 20px;
+  width: 100%;
+
+}
+
+.card-context-notice {
+  background: #FEF3C7;
+  border: 1px solid #FCD34D;
+  color: #92400E;
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.clinical-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #F0F4F2;
+  margin-bottom: 12px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-type-badge {
+  background: #E8F0EC;
+  color: #2D5A4C;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card-confidence-badge {
+  font-size: 11px;
+  background: #F1F5F9;
+  color: #475569;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.card-review-badge {
+  background: #FEF3C7;
+  color: #B45309;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.clinical-card-summary {
+  background: #F8FAFC;
+  border-left: 3px solid #2D5A4C;
+  padding: 10px 14px;
+  border-radius: 0 8px 8px 0;
+  font-size: 13.5px;
+  color: #1E293B;
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+
+/* Instructions Mode Toggle Bar */
+.instruction-toggle-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.inst-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #D1E0D9;
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+
+.inst-btn.active {
+  background: #2D5A4C;
+  color: #ffffff;
+  border-color: #2D5A4C;
+}
+
+.instruction-view-box,
+.draft-text-box {
+  background: #FAFCFB;
+  border: 1px solid #E2ECE7;
+  border-radius: 10px;
+  padding: 14px;
+  font-family: inherit;
+}
+
+.instruction-view-box pre,
+.draft-text-box pre {
+  font-family: inherit;
+  font-size: 13.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #1E293B;
+  margin: 0;
+}
+
+/* SOAP Note Grid Blocks */
+.soap-card-sections {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.soap-block {
+  background: #FAFCFB;
+  border: 1px solid #E2ECE7;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.soap-block h5 {
+  margin: 0 0 6px 0;
+  font-size: 12px;
+  color: #2D5A4C;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.soap-block p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #334155;
+  white-space: pre-line;
+}
+
+/* Draft Editor */
+.card-draft-editor {
+  margin-bottom: 14px;
+}
+
+.full-draft-textarea {
+  width: 100%;
+  border: 1px solid #2D5A4C;
+  border-radius: 10px;
+  padding: 12px;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #1E293B;
+  outline: none;
+  resize: vertical;
+  background: #FAFDFB;
+}
+
+.soap-editor-grid label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.soap-editor-grid span {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2D5A4C;
+  margin-bottom: 4px;
+}
+
+.soap-editor-grid textarea {
+  width: 100%;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  padding: 8px;
+  font-family: inherit;
+  font-size: 12.5px;
+}
+
+.draft-editor-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn-save-draft {
+  background: #2D5A4C;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-cancel-draft {
+  background: #F1F5F9;
+  color: #475569;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* Key Findings & Considerations */
+.clinical-card-block {
+  margin-bottom: 14px;
+}
+
+.clinical-card-block h4 {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2D5A4C;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.clinical-card-block ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13.5px;
+  color: #334155;
+  line-height: 1.6;
+}
+
+.clinical-card-block.considerations h4 {
+  color: #B45309;
+}
+
+/* Lab Trends Sparklines */
+.lab-trends-wrapper {
+  background: #F8FAFC;
+  border: 1px solid #E2ECE7;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.lab-trends-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.trends-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2D5A4C;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.timeframe-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.tf-btn {
+  background: #ffffff;
+  border: 1px solid #CBD5E1;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #475569;
+
+}
+
+.tf-btn.active {
+  background: #2D5A4C;
+  color: #ffffff;
+  border-color: #2D5A4C;
+}
+
+.lab-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.lab-chart-card {
+  background: #ffffff;
+  border: 1px solid #E2ECE7;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.lab-chart-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.lab-chart-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1E293B;
+}
+
+.lab-chart-val {
+  font-size: 12px;
+  font-weight: 700;
+  color: #2D5A4C;
+}
+
+.trend-tag {
+  font-size: 10px;
+  margin-left: 4px;
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+
+.trend-tag.decreasing, .trend-tag.increasing {
+  background: #FEF3C7;
+  color: #D97706;
+}
+
+.lab-svg-sparkline {
+  width: 100%;
+  height: 50px;
+  background: #FAFDFB;
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.lab-chart-meta {
+  font-size: 10.5px;
+  color: #94A3B8;
+  margin-top: 4px;
+  text-align: right;
+}
+
+/* Sources Bar */
+.card-sources-bar {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed #E2ECE7;
+}
+
+.sources-toggle-btn {
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  color: #2D5A4C;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+}
+
+.sources-list-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.source-chip-btn {
+  background: #E8F0EC;
+  color: #2D5A4C;
+  border: 1px solid #C4D9CF;
+  font-size: 11.5px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+
+.source-chip-btn:hover {
+  background: #2D5A4C;
+  color: #ffffff;
+}
+
+/* Toast Notice */
+.record-added-toast {
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  color: #065F46;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Actions Footer */
+.clinical-card-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #F0F4F2;
+}
+
+.card-action-btn {
+  background: #F1F5F9;
+  border: 1px solid #CBD5E1;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+
+.card-action-btn:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+}
+
+.card-action-btn.primary {
+  background: #2D5A4C;
+  color: #ffffff;
+  border-color: #2D5A4C;
+}
+
+.card-action-btn.primary:hover {
+  background: #23473C;
+}
+
+.card-timestamp {
+  margin-left: auto;
+  font-size: 11px;
+  color: #94A3B8;
+}
