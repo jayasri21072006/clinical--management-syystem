@@ -1,4 +1,4 @@
-# Sage Green Clinical Management System (CMS) — Documentation Index
+# Sage Green Clinical Management System (CMS) — Documentation & Audit Index
 
 Welcome to the technical documentation repository for the **Sage Green Clinical Management System (CMS)**.
 
@@ -8,10 +8,11 @@ This folder contains the official audit reports, architectural evaluation, bug d
 
 ## Documentation Directory
 
-| Document | Description |
-|---|---|
-| 📋 [**BUGS_AND_ISSUES.md**](./BUGS_AND_ISSUES.md) | Exhaustive, technical bug and vulnerability audit report covering HIPAA privacy gaps, backend schema issues, database concurrency limitations, and frontend routing omissions. |
-| 🚀 [**IMPROVEMENTS_AND_RECOMMENDATIONS.md**](./IMPROVEMENTS_AND_RECOMMENDATIONS.md) | Strategic, prioritized enhancement roadmap spanning 6 core pillars: AI & HIPAA Fortification, Database Scalability, UX Modernization, RBAC Auth, Pharmacy Intelligence, and CI/CD DevSecOps. |
+| Document | Format | Description |
+|---|:---:|---|
+| 📑 [**Clinical_Management_System_Audit_and_Improvements.pdf**](./Clinical_Management_System_Audit_and_Improvements.pdf) | **PDF** | **Official 4-Page Publication-Grade Certification Document** combining the Executive Summary, Full Bug Audit, HIPAA Evaluation, and 6-Pillar Strategic Improvement Roadmap. |
+| 📋 [**BUGS_AND_ISSUES.md**](./BUGS_AND_ISSUES.md) | Markdown | Comprehensive technical bug and vulnerability audit report covering HIPAA privacy gaps, backend schema issues, database concurrency limitations, and frontend routing omissions. |
+| 🚀 [**IMPROVEMENTS_AND_RECOMMENDATIONS.md**](./IMPROVEMENTS_AND_RECOMMENDATIONS.md) | Markdown | Strategic, prioritized enhancement roadmap spanning 6 core pillars: AI & HIPAA Fortification, Database Scalability, UX Modernization, RBAC Auth, Pharmacy Intelligence, and CI/CD DevSecOps. |
 
 ---
 
